@@ -79,7 +79,7 @@ command! -bang -nargs=? -complete=dir FastFiles Files<bang> <args>
 
 if executable('rg')
     let s:fzf_fast_files_cmd = 'rg --color=never --hidden --files'
-    let s:fzf_fast_grep_cmd  = 'rg --color=always --hidden -H --no-heading --vimgrep --smart-case '
+    let s:fzf_fast_grep_cmd  = 'rg --color=always --hidden --vimgrep --smart-case '
     let s:fzf_fast_fgrep_cmd = s:fzf_fast_grep_cmd . ' -F '
     call s:setup_extra_fzf_commands()
 elseif executable('ag')
