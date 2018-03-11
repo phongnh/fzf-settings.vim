@@ -35,14 +35,6 @@ let g:fzf_colors = {
             \ 'header':  ['fg', 'Comment'],
             \ }
 
-function! s:fzf_grep_preview_options(bang) abort
-    return a:bang ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?')
-endfunction
-
-function! s:fzf_file_preview_options(bang) abort
-    return fzf#vim#with_preview('right:60%:hidden', '?')
-endfunction
-
 function! s:detect_fzf_available_commands() abort
     let s:fzf_available_commands = []
     for cmd in ['rg', 'ag', 'pt', 'fd']
@@ -54,11 +46,11 @@ endfunction
 
 call s:detect_fzf_available_commands()
 
-" Command for git grep
-command! -bang -nargs=* GitGrep
-            \ call fzf#vim#grep('git grep --line-number ' . shellescape(<q-args>), 0, s:fzf_grep_preview_options(<bang>0), <bang>0)
+function! s:fzf_file_preview_options(bang) abort
+    return fzf#vim#with_preview('right:60%:hidden', '?')
+endfunction
 
-" Likewise, Files command with preview window
+" Files command with preview window
 command! -bang -nargs=? -complete=dir Files
             \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 
@@ -157,23 +149,40 @@ if len(s:fzf_available_grep_commands) == 0
     finish
 endif
 
-function! s:build_grep_command(command, literal) abort
+call add(s:fzf_available_grep_commands, 'git')
+
+function! s:build_grep_command(command, fixed_strings) abort
     if a:command ==# 'rg'
         let cmd = 'rg --color=always --hidden --vimgrep --smart-case '
-        return a:literal ? cmd . ' -F ' : cmd
+        return a:fixed_strings ? cmd . ' -F ' : cmd
     elseif a:command ==# 'ag'
         let cmd = 'ag --color --hidden --vimgrep --smart-case '
-        return a:literal ? cmd . ' -F ' : cmd
-    else
+        return a:fixed_strings ? cmd . ' -F ' : cmd
+    elseif a:command ==# 'pt'
         return 'pt --color --nogroup --column --home-ptignore --hidden --smart-case '
+    else
+        let cmd = 'git grep --line-number ' 
+        return a:fixed_strings ? cmd . ' -F ' : cmd
     endif
 endfunction
 
+function! s:build_current_grep_command(fixed_strings) abort
+    let cmd = s:fzf_current_grep_command
+    if cmd ==# 'git' && empty(finddir('.git', getcwd() . ';'))
+        let cmd = s:fzf_available_grep_commands[0]
+    endif
+    return s:build_grep_command(cmd, a:fixed_strings)
+endfunction
+
+function! s:fzf_grep_preview_options(bang) abort
+    return a:bang ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?')
+endfunction
+
 command! -bang -nargs=* Ag
-            \ call fzf#vim#grep(s:build_grep_command(s:fzf_current_grep_command, 0) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
+            \ call fzf#vim#grep(s:build_current_grep_command(0) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
 
 command! -bang -nargs=* FastAg
-            \ call fzf#vim#grep(s:build_grep_command(s:fzf_current_grep_command, 1) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
+            \ call fzf#vim#grep(s:build_current_grep_command(1) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
 
 let s:fzf_current_grep_command = s:fzf_available_grep_commands[0]
 
