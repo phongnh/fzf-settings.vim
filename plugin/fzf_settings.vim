@@ -63,39 +63,51 @@ endif
 let s:fzf_follow_symlinks = 0
 let s:fzf_current_command = s:fzf_available_commands[0]
 
-function! s:fzf_rg_command() abort
-    let cmd = 'rg --color=never --no-ignore-vcs --hidden %s --files'
-    let cmd = printf(cmd, s:fzf_follow_symlinks ? '--follow' : '')
-    return substitute(cmd, '  ', ' ', 'g')
+function! s:fzf_rg_command(fast) abort
+    let cmd = 'rg --color=never %s --files'
+    let options = a:fast ? '--ignore' : '--no-ignore'
+    let options .= ' --hidden'
+    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
+    let cmd = printf(cmd, options)
+    return cmd
 endfunction
 
-function! s:fzf_ag_command() abort
-    let cmd = 'ag --nocolor --skip-vcs-ignores --hidden %s -l -g ""'
-    let cmd = printf(cmd, s:fzf_follow_symlinks ? '--follow' : '')
-    return substitute(cmd, '  ', ' ', 'g')
+function! s:fzf_ag_command(fast) abort
+    let cmd = 'ag --nocolor %s -l -g ""'
+    let options = a:fast ? '' : '--unrestricted'
+    let options .= ' --hidden'
+    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
+    let cmd = printf(cmd, options)
+    return cmd
 endfunction
 
-function! s:fzf_pt_command() abort
-    let cmd = 'pt --nocolor --home-ptignore --skip-vcs-ignores --hidden %s -l -g='
-    let cmd = printf(cmd, s:fzf_follow_symlinks ? '--follow' : '')
-    return substitute(cmd, '  ', ' ', 'g')
+function! s:fzf_pt_command(fast) abort
+    let cmd = 'pt --nocolor %s -l -g='
+    let options = a:fast ? '--home-ptignore' : '--skip-vcs-ignores'
+    let options .= ' --hidden'
+    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
+    let cmd = printf(cmd, options)
+    return cmd
 endfunction
 
-function! s:fzf_fd_command() abort
-    let cmd = 'fd --color=never --no-ignore-vcs --hidden %s --type file .'
-    let cmd = printf(cmd, s:fzf_follow_symlinks ? '--follow' : '')
-    return substitute(cmd, '  ', ' ', 'g')
+function! s:fzf_fd_command(fast) abort
+    let cmd = 'fd --color=never %s --type file .'
+    let options = a:fast ? '' : '--no-ignore'
+    let options .= ' --hidden'
+    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
+    let cmd = printf(cmd, options)
+    return cmd
 endfunction
 
-function! s:build_file_command(command) abort
+function! s:build_file_command(command, fast) abort
     if a:command ==# 'rg'
-        return s:fzf_rg_command()
+        return s:fzf_rg_command(a:fast)
     elseif a:command ==# 'ag'
-        return s:fzf_ag_command()
+        return s:fzf_ag_command(a:fast)
     elseif a:command ==# 'pt'
-        return s:fzf_pt_command()
+        return s:fzf_pt_command(a:fast)
     elseif a:command ==# 'fd'
-        return s:fzf_fd_command()
+        return s:fzf_fd_command(a:fast)
     endif
 endfunction
 
@@ -124,7 +136,8 @@ function! s:change_fzf_file_command(bang, command) abort
         let idx = index(s:fzf_available_commands, s:fzf_current_command)
         let s:fzf_current_command = get(s:fzf_available_commands, idx + 1, s:fzf_available_commands[0])
     endif
-    let s:fzf_file_command = s:build_file_command(s:fzf_current_command)
+
+    let s:fzf_file_command = s:build_file_command(s:fzf_current_command, 1)
     echo 'FZF is using command `' . s:fzf_file_command . '`!'
 endfunction
 
@@ -136,12 +149,15 @@ command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_commands Change
 
 nnoremap <silent> =of :ChangeFzfFileCommand<CR>
 
-function! s:build_fzf_options(bang) abort
-    return extend(s:fzf_file_preview_options(a:bang), { 'source': s:build_file_command(s:fzf_current_command) })
+function! s:build_fzf_options(fast, bang) abort
+    return extend(s:fzf_file_preview_options(a:bang), { 'source': s:build_file_command(s:fzf_current_command, a:fast) })
 endfunction
 
+command! -bang -nargs=? -complete=dir Files
+            \ call fzf#vim#files(<q-args>, s:build_fzf_options(0, <bang>0), <bang>0)
+
 command! -bang -nargs=? -complete=dir FastFiles
-            \ call fzf#vim#files(<q-args>, s:build_fzf_options(<bang>0), <bang>0)
+            \ call fzf#vim#files(<q-args>, s:build_fzf_options(1, <bang>0), <bang>0)
 
 let s:fzf_available_grep_commands = filter(s:fzf_available_commands[:], 'v:val !~ "fd"')
 
