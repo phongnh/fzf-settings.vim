@@ -3,6 +3,8 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
     finish
 endif
 
+let g:loaded_fzf_settings_vim = 0
+
 if get(g:, 'loaded_fzf_settings_vim', 0)
     finish
 endif
@@ -37,7 +39,7 @@ let g:fzf_colors = {
 
 function! s:detect_fzf_available_commands() abort
     let s:fzf_available_commands = []
-    for cmd in ['rg', 'ag', 'pt', 'fd']
+    for cmd in ['rg', 'ag', 'fd']
         if executable(cmd)
             call add(s:fzf_available_commands, cmd)
         endif
@@ -81,15 +83,6 @@ function! s:fzf_ag_command(fast) abort
     return cmd
 endfunction
 
-function! s:fzf_pt_command(fast) abort
-    let cmd = 'pt --nocolor %s -l -g='
-    let options = a:fast ? '--home-ptignore' : '--skip-vcs-ignores'
-    let options .= ' --hidden'
-    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
-    let cmd = printf(cmd, options)
-    return cmd
-endfunction
-
 function! s:fzf_fd_command(fast) abort
     let cmd = 'fd --color=never %s --type file .'
     let options = a:fast ? '' : '--no-ignore'
@@ -104,8 +97,6 @@ function! s:build_file_command(command, fast) abort
         return s:fzf_rg_command(a:fast)
     elseif a:command ==# 'ag'
         return s:fzf_ag_command(a:fast)
-    elseif a:command ==# 'pt'
-        return s:fzf_pt_command(a:fast)
     elseif a:command ==# 'fd'
         return s:fzf_fd_command(a:fast)
     endif
@@ -174,8 +165,6 @@ function! s:build_grep_command(command, fixed_strings) abort
     elseif a:command ==# 'ag'
         let cmd = 'ag --color --hidden --vimgrep --smart-case '
         return a:fixed_strings ? cmd . ' -F ' : cmd
-    elseif a:command ==# 'pt'
-        return 'pt --color --nogroup --column --home-ptignore --hidden --smart-case '
     else
         let cmd = 'git grep --line-number ' 
         return a:fixed_strings ? cmd . ' -F ' : cmd
