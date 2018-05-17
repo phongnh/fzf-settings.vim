@@ -113,7 +113,7 @@ function! s:toggle_fzf_follow_symlinks() abort
 endfunction
 
 command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
-nnoremap <silent> =oF :ToggleFzfFollowSymlinks<CR>
+nnoremap <silent> yoF :ToggleFzfFollowSymlinks<CR>
 
 function! s:change_fzf_file_command(bang, command) abort
     if a:bang
@@ -138,7 +138,7 @@ endfunction
 
 command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_commands ChangeFzfFileCommand call <SID>change_fzf_file_command(<bang>0, <q-args>)
 
-nnoremap <silent> =of :ChangeFzfFileCommand<CR>
+nnoremap <silent> yof :ChangeFzfFileCommand<CR>
 
 function! s:build_fzf_options(fast, bang) abort
     return extend(s:fzf_file_preview_options(a:bang), { 'source': s:build_file_command(s:fzf_current_command, a:fast) })
@@ -212,6 +212,6 @@ endfunction
 
 command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_grep_commands ChangeFzfGrepCommand call <SID>change_fzf_grep_command(<bang>0, <q-args>)
 
-nnoremap <silent> =oa :ChangeFzfGrepCommand<CR>
+nnoremap <silent> yoa :ChangeFzfGrepCommand<CR>
 
 let g:loaded_fzf_settings_vim = 1

@@ -1,0 +1,42 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+$FZF_DEFAULT_OPTS	plugin/fzf_settings.vim	/^    let $FZF_DEFAULT_OPTS .= ' --inline-info'$/;"	v
+=oF	plugin/fzf_settings.vim	/^nnoremap <silent> =oF :ToggleFzfFollowSymlinks<CR>$/;"	m
+=oa	plugin/fzf_settings.vim	/^nnoremap <silent> =oa :ChangeFzfGrepCommand<CR>$/;"	m
+=of	plugin/fzf_settings.vim	/^nnoremap <silent> =of :ChangeFzfFileCommand<CR>$/;"	m
+Ag	plugin/fzf_settings.vim	/^command! -bang -nargs=* Ag$/;"	c
+ChangeFzfFileCommand	plugin/fzf_settings.vim	/^command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_commands ChangeFzfFileCommand call <SID>change_fzf_file_command(<bang>0, <q-args>)$/;"	c
+ChangeFzfGrepCommand	plugin/fzf_settings.vim	/^command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_grep_commands ChangeFzfGrepCommand call <SID>change_fzf_grep_command(<bang>0, <q-args>)$/;"	c
+FastAg	plugin/fzf_settings.vim	/^command! -bang -nargs=* FastAg$/;"	c
+FastFiles	plugin/fzf_settings.vim	/^command! -bang -nargs=? -complete=dir FastFiles Files<bang> <args>$/;"	c
+FastFiles	plugin/fzf_settings.vim	/^command! -bang -nargs=? -complete=dir FastFiles$/;"	c
+Files	plugin/fzf_settings.vim	/^command! -bang -nargs=? -complete=dir Files$/;"	c
+ToggleFzfFollowSymlinks	plugin/fzf_settings.vim	/^command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()$/;"	c
+build_current_grep_command	plugin/fzf_settings.vim	/^function! s:build_current_grep_command(fixed_strings) abort$/;"	f
+build_file_command	plugin/fzf_settings.vim	/^function! s:build_file_command(command, fast) abort$/;"	f
+build_fzf_options	plugin/fzf_settings.vim	/^function! s:build_fzf_options(fast, bang) abort$/;"	f
+build_grep_command	plugin/fzf_settings.vim	/^function! s:build_grep_command(command, fixed_strings) abort$/;"	f
+change_fzf_file_command	plugin/fzf_settings.vim	/^function! s:change_fzf_file_command(bang, command) abort$/;"	f
+change_fzf_grep_command	plugin/fzf_settings.vim	/^function! s:change_fzf_grep_command(bang, command) abort$/;"	f
+detect_fzf_available_commands	plugin/fzf_settings.vim	/^function! s:detect_fzf_available_commands() abort$/;"	f
+fzf_ag_command	plugin/fzf_settings.vim	/^function! s:fzf_ag_command(fast) abort$/;"	f
+fzf_fd_command	plugin/fzf_settings.vim	/^function! s:fzf_fd_command(fast) abort$/;"	f
+fzf_file_preview_options	plugin/fzf_settings.vim	/^function! s:fzf_file_preview_options(bang) abort$/;"	f
+fzf_grep_preview_options	plugin/fzf_settings.vim	/^function! s:fzf_grep_preview_options(bang) abort$/;"	f
+fzf_pt_command	plugin/fzf_settings.vim	/^function! s:fzf_pt_command(fast) abort$/;"	f
+fzf_rg_command	plugin/fzf_settings.vim	/^function! s:fzf_rg_command(fast) abort$/;"	f
+g:fzf_action	plugin/fzf_settings.vim	/^let g:fzf_action = {$/;"	v
+g:fzf_colors	plugin/fzf_settings.vim	/^let g:fzf_colors = {$/;"	v
+g:loaded_fzf_settings_vim	plugin/fzf_settings.vim	/^let g:loaded_fzf_settings_vim = 0$/;"	v
+g:loaded_fzf_settings_vim	plugin/fzf_settings.vim	/^let g:loaded_fzf_settings_vim = 1$/;"	v
+list_fzf_available_commands	plugin/fzf_settings.vim	/^function! s:list_fzf_available_commands(A, L, P) abort$/;"	f
+list_fzf_available_grep_commands	plugin/fzf_settings.vim	/^function! s:list_fzf_available_grep_commands(A, L, P) abort$/;"	f
+s:fzf_available_grep_commands	plugin/fzf_settings.vim	/^let s:fzf_available_grep_commands = filter(s:fzf_available_commands[:], 'v:val !~ "fd"')$/;"	v
+s:fzf_current_command	plugin/fzf_settings.vim	/^let s:fzf_current_command = s:fzf_available_commands[0]$/;"	v
+s:fzf_current_grep_command	plugin/fzf_settings.vim	/^let s:fzf_current_grep_command = s:fzf_available_grep_commands[0]$/;"	v
+s:fzf_follow_symlinks	plugin/fzf_settings.vim	/^let s:fzf_follow_symlinks = 0$/;"	v
+toggle_fzf_follow_symlinks	plugin/fzf_settings.vim	/^function! s:toggle_fzf_follow_symlinks() abort$/;"	f
