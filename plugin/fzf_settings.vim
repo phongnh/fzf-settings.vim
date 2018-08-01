@@ -3,8 +3,6 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
     finish
 endif
 
-let g:loaded_fzf_settings_vim = 0
-
 if get(g:, 'loaded_fzf_settings_vim', 0)
     finish
 endif
@@ -37,181 +35,63 @@ let g:fzf_colors = {
             \ 'header':  ['fg', 'Comment'],
             \ }
 
-function! s:detect_fzf_available_commands() abort
-    let s:fzf_available_commands = []
-    for cmd in ['rg', 'ag', 'fd']
-        if executable(cmd)
-            call add(s:fzf_available_commands, cmd)
-        endif
-    endfor
-endfunction
-
-call s:detect_fzf_available_commands()
 
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', '?')
+endfunction
+
+function! s:fzf_grep_preview_options(bang) abort
+    return a:bang ? fzf#vim#with_preview('up:60%', '?') : fzf#vim#with_preview('right:50%:hidden', '?')
 endfunction
 
 " Files command with preview window
 command! -bang -nargs=? -complete=dir Files
             \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 
-command! -bang -nargs=? -complete=dir FastFiles Files<bang> <args>
+" All files command with preview window
+command! -bang -nargs=? -complete=dir AFiles
+            \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 
-if len(s:fzf_available_commands) == 0
-    finish
+let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
+
+let s:has_rg = executable('rg')
+let s:has_ag = executable('ag')
+let s:has_fd = executable('fd')
+
+if s:has_rg || s:has_ag || s:has_fd
+    if s:has_rg
+        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --hidden --files'
+        let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
+    elseif s:has_ag
+        let s:fzf_files_command     = 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""'
+        let s:fzf_all_files_command = 'ag --nocolor --unrestricted --hidden -l -g ""'
+    else
+        let s:fzf_files_command     = 'fd --color=never --no-ignore-vcs --hidden --type file'
+        let s:fzf_all_files_command = 'fd --color=never --no-ignore --hidden --type file'
+    endif
+
+    function! s:build_fzf_options(command, bang) abort
+        let cmd = g:fzf_follow_symlinks ? a:command . ' --follow' : a:command
+        return extend(s:fzf_file_preview_options(a:bang), { 'source': cmd })
+    endfunction
+
+    command! -bang -nargs=? -complete=dir Files
+                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
+
+    command! -bang -nargs=? -complete=dir AFiles
+                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
 endif
 
-let s:fzf_follow_symlinks = 0
-let s:fzf_current_command = s:fzf_available_commands[0]
-
-function! s:fzf_rg_command(fast) abort
-    let cmd = 'rg --color=never %s --files'
-    let options = a:fast ? '--ignore' : '--no-ignore'
-    let options .= ' --hidden'
-    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
-    let cmd = printf(cmd, options)
-    return cmd
-endfunction
-
-function! s:fzf_ag_command(fast) abort
-    let cmd = 'ag --nocolor %s -l -g ""'
-    let options = a:fast ? '' : '--unrestricted'
-    let options .= ' --hidden'
-    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
-    let cmd = printf(cmd, options)
-    return cmd
-endfunction
-
-function! s:fzf_fd_command(fast) abort
-    let cmd = 'fd --color=never %s --type file .'
-    let options = a:fast ? '' : '--no-ignore'
-    let options .= ' --hidden'
-    let options .= s:fzf_follow_symlinks ? ' --follow' : ''
-    let cmd = printf(cmd, options)
-    return cmd
-endfunction
-
-function! s:build_file_command(command, fast) abort
-    if a:command ==# 'rg'
-        return s:fzf_rg_command(a:fast)
-    elseif a:command ==# 'ag'
-        return s:fzf_ag_command(a:fast)
-    elseif a:command ==# 'fd'
-        return s:fzf_fd_command(a:fast)
-    endif
-endfunction
-
-function! s:toggle_fzf_follow_symlinks() abort
-    if s:fzf_follow_symlinks == 0
-        let s:fzf_follow_symlinks = 1
-        echo 'FZF follows symlinks!'
+if s:has_rg || s:has_ag
+    if s:has_rg
+        let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
     else
-        let s:fzf_follow_symlinks = 0
-        echo 'FZF does not follow symlinks!'
-    endif
-endfunction
-
-command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
-nnoremap <silent> yoF :ToggleFzfFollowSymlinks<CR>
-
-function! s:change_fzf_file_command(bang, command) abort
-    if a:bang
-        let s:fzf_current_command = s:fzf_available_commands[0]
-    elseif strlen(a:command)
-        if index(s:fzf_available_commands, a:command) == -1
-            return
-        endif
-        let s:fzf_current_command = a:command
-    else
-        let idx = index(s:fzf_available_commands, s:fzf_current_command)
-        let s:fzf_current_command = get(s:fzf_available_commands, idx + 1, s:fzf_available_commands[0])
+        let s:fzf_grep_command = 'ag --color --hidden --vimgrep --smart-case'
     endif
 
-    let s:fzf_file_command = s:build_file_command(s:fzf_current_command, 1)
-    echo 'FZF is using command `' . s:fzf_file_command . '`!'
-endfunction
-
-function! s:list_fzf_available_commands(A, L, P) abort
-    return join(s:fzf_available_commands, "\n")
-endfunction
-
-command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_commands ChangeFzfFileCommand call <SID>change_fzf_file_command(<bang>0, <q-args>)
-
-nnoremap <silent> yof :ChangeFzfFileCommand<CR>
-
-function! s:build_fzf_options(fast, bang) abort
-    return extend(s:fzf_file_preview_options(a:bang), { 'source': s:build_file_command(s:fzf_current_command, a:fast) })
-endfunction
-
-command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, s:build_fzf_options(0, <bang>0), <bang>0)
-
-command! -bang -nargs=? -complete=dir FastFiles
-            \ call fzf#vim#files(<q-args>, s:build_fzf_options(1, <bang>0), <bang>0)
-
-let s:fzf_available_grep_commands = filter(s:fzf_available_commands[:], 'v:val !~ "fd"')
-
-if len(s:fzf_available_grep_commands) == 0
-    finish
+    " Ag command with preview window
+    command! -bang -nargs=* Ag
+                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
 endif
-
-call add(s:fzf_available_grep_commands, 'git')
-
-function! s:build_grep_command(command, fixed_strings) abort
-    if a:command ==# 'rg'
-        let cmd = 'rg --color=always --hidden --vimgrep --smart-case '
-        return a:fixed_strings ? cmd . ' -F ' : cmd
-    elseif a:command ==# 'ag'
-        let cmd = 'ag --color --hidden --vimgrep --smart-case '
-        return a:fixed_strings ? cmd . ' -F ' : cmd
-    else
-        let cmd = 'git grep --line-number ' 
-        return a:fixed_strings ? cmd . ' -F ' : cmd
-    endif
-endfunction
-
-function! s:build_current_grep_command(fixed_strings) abort
-    let cmd = s:fzf_current_grep_command
-    if cmd ==# 'git' && empty(finddir('.git', getcwd() . ';'))
-        let cmd = s:fzf_available_grep_commands[0]
-    endif
-    return s:build_grep_command(cmd, a:fixed_strings)
-endfunction
-
-function! s:fzf_grep_preview_options(bang) abort
-    return a:bang ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?')
-endfunction
-
-command! -bang -nargs=* Ag
-            \ call fzf#vim#grep(s:build_current_grep_command(0) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-
-command! -bang -nargs=* FastAg
-            \ call fzf#vim#grep(s:build_current_grep_command(1) . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-
-let s:fzf_current_grep_command = s:fzf_available_grep_commands[0]
-
-function! s:change_fzf_grep_command(bang, command) abort
-    if a:bang
-        let s:fzf_current_grep_command = s:fzf_available_grep_commands[0]
-    elseif strlen(a:command)
-        if index(s:fzf_available_grep_commands, a:command) == -1
-            return
-        endif
-        let s:fzf_current_grep_command = a:command
-    else
-        let idx = index(s:fzf_available_grep_commands, s:fzf_current_grep_command)
-        let s:fzf_current_grep_command = get(s:fzf_available_grep_commands, idx + 1, s:fzf_available_grep_commands[0])
-    endif
-    echo 'FZF Grep is using command `' . s:fzf_current_grep_command . '`!'
-endfunction
-
-function! s:list_fzf_available_grep_commands(A, L, P) abort
-    return join(s:fzf_available_grep_commands, "\n")
-endfunction
-
-command! -nargs=? -bang -complete=custom,<SID>list_fzf_available_grep_commands ChangeFzfGrepCommand call <SID>change_fzf_grep_command(<bang>0, <q-args>)
-
-nnoremap <silent> yoa :ChangeFzfGrepCommand<CR>
 
 let g:loaded_fzf_settings_vim = 1
