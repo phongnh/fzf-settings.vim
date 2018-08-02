@@ -82,6 +82,36 @@ if s:has_rg || s:has_ag || s:has_fd
                 \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
 endif
 
+function! s:find_project_dir(starting_path) abort
+    let starting_path = a:starting_path
+    if empty(starting_path)
+        return ''
+    endif
+
+    let starting_path = fnamemodify(starting_path, ':.')
+    if empty(starting_path)
+        return ''
+    endif
+
+    for root_marker in ['.git', '.hg', '.svn']
+        let root_dir = finddir(root_marker, starting_path . ';')
+        if empty(root_dir)
+            continue
+        endif
+
+        let root_dir = substitute(root_dir, root_marker, '', '')
+        if !empty(root_dir)
+            let root_dir = fnamemodify(root_dir, ':p:~')
+        endif
+
+        return root_dir
+    endfor
+
+    return ''
+endfunction
+
+command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:~:h'))
+
 if s:has_rg || s:has_ag
     if s:has_rg
         let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
