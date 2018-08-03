@@ -4,7 +4,7 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
 endif
 
 if get(g:, 'loaded_fzf_settings_vim', 0)
-    finish
+    " finish
 endif
 
 if has('nvim')
@@ -83,25 +83,19 @@ if s:has_rg || s:has_ag || s:has_fd
 endif
 
 function! s:find_project_dir(starting_path) abort
-    let starting_path = a:starting_path
-    if empty(starting_path)
-        return ''
-    endif
-
-    let starting_path = fnamemodify(starting_path, ':.')
-    if empty(starting_path)
+    if empty(a:starting_path)
         return ''
     endif
 
     for root_marker in ['.git', '.hg', '.svn']
-        let root_dir = finddir(root_marker, starting_path . ';')
+        let root_dir = finddir(root_marker, a:starting_path . ';')
         if empty(root_dir)
             continue
         endif
 
         let root_dir = substitute(root_dir, root_marker, '', '')
         if !empty(root_dir)
-            let root_dir = fnamemodify(root_dir, ':p:~')
+            let root_dir = fnamemodify(root_dir, ':p:~:.')
         endif
 
         return root_dir
@@ -110,7 +104,7 @@ function! s:find_project_dir(starting_path) abort
     return ''
 endfunction
 
-command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:~:h'))
+command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
 if s:has_rg || s:has_ag
     if s:has_rg
