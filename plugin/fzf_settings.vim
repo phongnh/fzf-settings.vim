@@ -4,7 +4,7 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
 endif
 
 if get(g:, 'loaded_fzf_settings_vim', 0)
-    " finish
+    finish
 endif
 
 if has('nvim')
