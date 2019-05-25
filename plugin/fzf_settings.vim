@@ -53,6 +53,7 @@ command! -bang -nargs=? -complete=dir AFiles
             \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 
 let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
+let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 
 let s:has_rg = executable('rg')
 let s:has_ag = executable('ag')
@@ -60,7 +61,7 @@ let s:has_fd = executable('fd')
 
 if s:has_rg || s:has_ag || s:has_fd
     if s:has_rg
-        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --hidden --files'
+        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files'
         let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
     elseif s:has_ag
         let s:fzf_files_command     = 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""'
@@ -71,15 +72,32 @@ if s:has_rg || s:has_ag || s:has_fd
     endif
 
     function! s:build_fzf_options(command, bang) abort
-        let cmd = g:fzf_follow_symlinks ? a:command . ' --follow' : a:command
+        let cmd = s:fzf_follow_symlinks ? a:command . ' --follow' : a:command
         return extend(s:fzf_file_preview_options(a:bang), { 'source': cmd })
     endfunction
 
-    command! -bang -nargs=? -complete=dir Files
-                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
+    function! s:setup_fzf_commands() abort
+        command! -bang -nargs=? -complete=dir Files
+                    \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
 
-    command! -bang -nargs=? -complete=dir AFiles
-                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
+        command! -bang -nargs=? -complete=dir AFiles
+                    \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
+    endfunction
+
+    call s:setup_fzf_commands()
+
+    function! s:toggle_fzf_follow_symlinks() abort
+        if s:fzf_follow_symlinks == 0
+            let s:fzf_follow_symlinks = 1
+            echo 'FZF follows symlinks!'
+        else
+            let s:fzf_follow_symlinks = 0
+            echo 'FZF does not follow symlinks!'
+        endif
+        call s:setup_fzf_commands()
+    endfunction
+
+    command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
 endif
 
 function! s:find_project_dir(starting_path) abort
