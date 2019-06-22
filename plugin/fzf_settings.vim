@@ -136,4 +136,209 @@ if s:has_rg || s:has_ag
                 \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
 endif
 
+" Extra commands
+
+function! s:warn(message) abort
+    echohl WarningMsg
+    echomsg a:message
+    echohl None
+    return 0
+endfunction
+
+function! s:fzf_bufopen(e) abort
+    let list = split(a:e)
+    if len(list) < 4
+        return
+    endif
+
+    let [linenr, col, file_text] = [list[1], list[2]+1, join(list[3:])]
+    let lines = getbufline(file_text, linenr)
+    let path = file_text
+    if empty(lines)
+        if stridx(join(split(getline(linenr))), file_text) == 0
+            let lines = [file_text]
+            let path = bufname('%')
+        elseif filereadable(path)
+            let lines = ['buffer unloaded']
+        else
+            " Skip.
+            return
+        endif
+    endif
+
+    execute 'e '  . path
+    call cursor(linenr, col)
+endfunction
+
+function! s:fzf_jumplist() abort
+    return split(call('execute', ['jumps']), '\n')[1:]
+endfunction
+
+function! s:fzf_jumps(bang) abort
+    let s:source = 'jumps'
+    call fzf#run(fzf#wrap('jumps', {
+                \ 'source':  <sid>fzf_jumplist(),
+                \ 'sink':    function('s:fzf_bufopen'),
+                \ 'options': '+m --prompt "Jumps> "',
+                \ }, a:bang))
+endfunction
+
+command! -bang -nargs=0 Jumps call <SID>fzf_jumps(<bang>0)
+
+function! s:fzf_yank_sink(e) abort
+    let @" = a:e
+    echohl ModeMsg
+    echo 'Yanked!'
+    echohl None
+endfunction
+
+function! s:fzf_messages_source() abort
+    return split(call('execute', ['messages']), '\n')
+endfunction
+
+function! s:fzf_messages(bang) abort
+    let s:source = 'messages'
+    call fzf#run(fzf#wrap('messages', {
+                \ 'source':  <sid>fzf_messages_source(),
+                \ 'sink':    function('s:fzf_yank_sink'),
+                \ 'options': '+m --prompt "Messages> "',
+                \ }, a:bang))
+endfunction
+command! -bang -nargs=0 Messages call <SID>fzf_messages(<bang>0)
+
+function! s:fzf_open_quickfix_item(e) abort
+    let line = a:e
+    let filename = fnameescape(split(line, ':\d\+:')[0])
+    let linenr = matchstr(line, ':\d\+:')[1:-2]
+    let colum = matchstr(line, '\(:\d\+\)\@<=:\d\+:')[1:-2]
+    execute 'e ' . filename
+    call cursor(linenr, colum)
+endfunction
+
+function! s:fzf_quickfix_to_grep(v) abort
+    return bufname(a:v.bufnr) . ':' . a:v.lnum . ':' . a:v.col . ':' . a:v.text
+endfunction
+
+function! s:fzf_get_quickfix() abort
+    return map(getqflist(), 's:fzf_quickfix_to_grep(v:val)')
+endfunction
+
+function! s:fzf_quickfix(bang) abort
+    let s:source = 'quickfix'
+    let items = <sid>fzf_get_quickfix()
+    if len(items) == 0
+        call s:warn('No quickfix items!')
+        return
+    endif
+    call fzf#run(fzf#wrap('quickfix', {
+                \ 'source': items,
+                \ 'sink':   function('s:fzf_open_quickfix_item'),
+                \ 'options': '--layout=reverse-list --prompt "Quickfix> "'
+                \ }, a:bang))
+endfunction
+
+function! s:fzf_get_location_list() abort
+    return map(getloclist(0), 's:fzf_quickfix_to_grep(v:val)')
+endfunction
+
+function! s:fzf_location_list(bang) abort
+    let s:source = 'location_list'
+    let items = <sid>fzf_get_location_list()
+    if len(items) == 0
+        call s:warn('No location list items!')
+        return
+    endif
+    call fzf#run(fzf#wrap('location_list', {
+                \ 'source': items,
+                \ 'sink':   function('s:fzf_open_quickfix_item'),
+                \ 'options': '--layout=reverse-list --prompt "LocationList> "'
+                \ }, a:bang))
+endfunction
+
+command! -bang -nargs=0 Quickfix call s:fzf_quickfix(<bang>0)
+command! -bang -nargs=0 LocationList call s:fzf_location_list(<bang>0)
+
+function! s:fzf_get_registers() abort
+    return split(call('execute', ['registers']), '\n')[1:]
+endfunction
+
+function! s:fzf_registers(bang) abort
+    let s:source = 'registers'
+    let items = <sid>fzf_get_registers()
+    if len(items) == 0
+        call s:warn('No register items!')
+        return
+    endif
+    call fzf#run(fzf#wrap('registers', {
+                \ 'source':  items,
+                \ 'sink':    function('s:fzf_yank_sink'),
+                \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
+                \ }, a:bang))
+endfunction
+command! -bang -nargs=0 Registers call s:fzf_registers(<bang>0)
+
+function! s:strip(str)
+    return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunction
+
+function! s:fzf_outline_format(lists) abort
+    for list in a:lists
+        let linenr = list[2][:len(list[2])-3]
+        let line = getline(linenr)
+        let idx = stridx(line, list[0])
+        let len = len(list[0])
+        let list[0] = line[:idx-1] . printf("\x1b[%s%sm%s\x1b[m", 34, '', line[idx : idx+len-1]) . line[idx + len :]
+    endfor
+    if exists('*trim')
+        let map_func = "printf('%s', trim(v:val))"
+    else
+        let map_func = "printf('%s', s:strip(v:val))"
+    endif
+    for list in a:lists
+        call map(list, map_func)
+    endfor
+    return a:lists
+endfunction
+
+function! s:fzf_outline_source(tag_cmds) abort
+    if !filereadable(expand('%'))
+        throw 'Save the file first'
+    endif
+    let lines = []
+    for cmd in a:tag_cmds
+        let lines = split(system(cmd), "\n")
+        if !v:shell_error && len(lines)
+            break
+        endif
+    endfor
+    if v:shell_error
+        throw get(lines, 0, 'Failed to extract tags')
+    elseif empty(lines)
+        throw 'No tags found'
+    endif
+    return map(s:fzf_outline_format(map(lines, 'split(v:val, "\t")')), 'join(v:val, "\t")')
+endfunction
+
+function! s:fzf_outline_sink(lines) abort
+    if !empty(a:lines)
+        let line = a:lines[0]
+        execute split(line, "\t")[2]
+    endif
+endfunction
+
+function! s:fzf_outline(bang) abort
+    let s:source = 'outline'
+    let tag_cmds = [
+                \ printf('ctags -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', &filetype, expand('%:S')),
+                \ printf('ctags -f - --sort=no --excmd=number %s 2>/dev/null', expand('%:S'))
+                \ ]
+    call fzf#run(fzf#wrap('outline', {
+                \ 'source':  reverse(s:fzf_outline_source(tag_cmds)),
+                \ 'sink*':   function('s:fzf_outline_sink'),
+                \ 'options': '--layout=reverse-list +m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
+                \ }, a:bang))
+endfunction
+
+command! -bang -nargs=0 BOutline call s:fzf_outline(<bang>0)
+
 let g:loaded_fzf_settings_vim = 1
