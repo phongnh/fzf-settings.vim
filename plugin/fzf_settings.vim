@@ -333,7 +333,7 @@ function! s:fzf_outline(bang) abort
                 \ printf('ctags -f - --sort=no --excmd=number %s 2>/dev/null', expand('%:S'))
                 \ ]
     call fzf#run(fzf#wrap('outline', {
-                \ 'source':  reverse(s:fzf_outline_source(tag_cmds)),
+                \ 'source':  s:fzf_outline_source(tag_cmds),
                 \ 'sink*':   function('s:fzf_outline_sink'),
                 \ 'options': '--layout=reverse-list +m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
                 \ }, a:bang))
