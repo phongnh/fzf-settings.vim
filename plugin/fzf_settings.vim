@@ -278,11 +278,11 @@ endfunction
 command! -bang -nargs=0 Registers call s:fzf_registers(<bang>0)
 
 if exists('*trim')
-    function! s:strip(str)
+    function! s:strip(str) abort
         return trim(a:str)
     endfunction
 else
-    function! s:strip(str)
+    function! s:strip(str) abort
         return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
     endfunction
 endif
@@ -290,13 +290,9 @@ endif
 function! s:fzf_outline_format(lists) abort
     for list in a:lists
         let linenr = list[2][:len(list[2])-3]
-        let line = getline(linenr)
-        let idx = stridx(line, list[0])
-        let len = len(list[0])
-        let list[0] = line[:idx-1] . printf("\x1b[%s%sm%s\x1b[m", 34, '', line[idx : idx+len-1]) . line[idx + len :]
-    endfor
-    for list in a:lists
-        call map(list, "printf('%s', s:strip(v:val))")
+        let line = s:strip(getline(linenr))
+        let list[0] = substitute(line, list[0], printf("\x1b[34m%s\x1b[m", list[0]), '')
+        call map(list, "printf('%s', v:val)")
     endfor
     return a:lists
 endfunction
