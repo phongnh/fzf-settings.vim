@@ -277,9 +277,15 @@ function! s:fzf_registers(bang) abort
 endfunction
 command! -bang -nargs=0 Registers call s:fzf_registers(<bang>0)
 
-function! s:strip(str)
-    return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-endfunction
+if exists('*trim')
+    function! s:strip(str)
+        return trim(a:str)
+    endfunction
+else
+    function! s:strip(str)
+        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
+    endfunction
+endif
 
 function! s:fzf_outline_format(lists) abort
     for list in a:lists
@@ -289,13 +295,8 @@ function! s:fzf_outline_format(lists) abort
         let len = len(list[0])
         let list[0] = line[:idx-1] . printf("\x1b[%s%sm%s\x1b[m", 34, '', line[idx : idx+len-1]) . line[idx + len :]
     endfor
-    if exists('*trim')
-        let map_func = "printf('%s', trim(v:val))"
-    else
-        let map_func = "printf('%s', s:strip(v:val))"
-    endif
     for list in a:lists
-        call map(list, map_func)
+        call map(list, "printf('%s', s:strip(v:val))")
     endfor
     return a:lists
 endfunction
@@ -327,16 +328,20 @@ function! s:fzf_outline_sink(lines) abort
 endfunction
 
 function! s:fzf_outline(bang) abort
-    let s:source = 'outline'
-    let tag_cmds = [
-                \ printf('ctags -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', &filetype, expand('%:S')),
-                \ printf('ctags -f - --sort=no --excmd=number %s 2>/dev/null', expand('%:S'))
-                \ ]
-    call fzf#run(fzf#wrap('outline', {
-                \ 'source':  s:fzf_outline_source(tag_cmds),
-                \ 'sink*':   function('s:fzf_outline_sink'),
-                \ 'options': '--layout=reverse-list +m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
-                \ }, a:bang))
+    try
+        let s:source = 'outline'
+        let tag_cmds = [
+                    \ printf('ctags -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', &filetype, expand('%:S')),
+                    \ printf('ctags -f - --sort=no --excmd=number %s 2>/dev/null', expand('%:S'))
+                    \ ]
+        call fzf#run(fzf#wrap('outline', {
+                    \ 'source':  s:fzf_outline_source(tag_cmds),
+                    \ 'sink*':   function('s:fzf_outline_sink'),
+                    \ 'options': '--layout=reverse-list -m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
+                    \ }, a:bang))
+    catch
+        call s:warn(v:exception)
+    endtry
 endfunction
 
 command! -bang -nargs=0 BOutline call s:fzf_outline(<bang>0)
