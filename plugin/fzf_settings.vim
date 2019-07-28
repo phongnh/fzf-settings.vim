@@ -52,6 +52,7 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=? -complete=dir AFiles
             \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 
+let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
 let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
 let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 
@@ -60,15 +61,15 @@ let s:has_ag = executable('ag')
 let s:has_fd = executable('fd')
 
 if s:has_rg || s:has_ag || s:has_fd
-    if s:has_rg
-        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files'
-        let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
-    elseif s:has_ag
+    if s:has_fd && g:fzf_find_tool == 'fd'
+        let s:fzf_files_command     = 'fd --color=never --no-ignore-vcs --hidden --type file'
+        let s:fzf_all_files_command = 'fd --color=never --no-ignore --hidden --type file'
+    elseif s:has_ag && g:fzf_find_tool == 'ag'
         let s:fzf_files_command     = 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""'
         let s:fzf_all_files_command = 'ag --nocolor --unrestricted --hidden -l -g ""'
     else
-        let s:fzf_files_command     = 'fd --color=never --no-ignore-vcs --hidden --type file'
-        let s:fzf_all_files_command = 'fd --color=never --no-ignore --hidden --type file'
+        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files'
+        let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
     endif
 
     function! s:build_fzf_options(command, bang) abort
