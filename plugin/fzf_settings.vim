@@ -68,7 +68,7 @@ if s:has_rg || s:has_ag || s:has_fd
         let s:fzf_files_command     = 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""'
         let s:fzf_all_files_command = 'ag --nocolor --unrestricted --hidden -l -g ""'
     else
-        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files'
+        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-parent --hidden --files'
         let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
     endif
 
