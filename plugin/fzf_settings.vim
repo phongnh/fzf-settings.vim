@@ -4,7 +4,7 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
 endif
 
 if get(g:, 'loaded_fzf_settings_vim', 0)
-    finish
+    " finish
 endif
 
 if has('nvim')
@@ -18,23 +18,6 @@ let g:fzf_action = {
             \ 'ctrl-t': 'tabedit',
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
-
-let g:fzf_colors = {
-            \ 'fg':      ['fg', 'Normal'],
-            \ 'bg':      ['bg', 'Normal'],
-            \ 'hl':      ['fg', 'Comment'],
-            \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-            \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-            \ 'hl+':     ['fg', 'Statement'],
-            \ 'info':    ['fg', 'PreProc'],
-            \ 'border':  ['fg', 'Ignore'],
-            \ 'prompt':  ['fg', 'Conditional'],
-            \ 'pointer': ['fg', 'Exception'],
-            \ 'marker':  ['fg', 'Keyword'],
-            \ 'spinner': ['fg', 'Label'],
-            \ 'header':  ['fg', 'Comment'],
-            \ }
-
 
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', '?')
