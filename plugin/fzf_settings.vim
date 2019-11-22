@@ -34,7 +34,7 @@ let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 let s:find_commands = {
             \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
             \ 'ag': 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""',
-            \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
+            \ 'fd': 'fd --color=never --no-ignore-vcs --ignore-file ~/.ignore --hidden --type file',
             \ }
 
 let s:find_all_commands = {
