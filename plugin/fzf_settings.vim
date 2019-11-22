@@ -7,7 +7,7 @@ if get(g:, 'loaded_fzf_settings_vim', 0)
     " finish
 endif
 
-if has('nvim')
+if has('nvim') || has('gui_running')
     let $FZF_DEFAULT_OPTS .= ' --inline-info'
 endif
 
@@ -27,33 +27,39 @@ function! s:fzf_grep_preview_options(bang) abort
     return a:bang ? fzf#vim#with_preview('up:60%', '?') : fzf#vim#with_preview('right:50%:hidden', '?')
 endfunction
 
-" Files command with preview window
-command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
-
-" All files command with preview window
-command! -bang -nargs=? -complete=dir AFiles
-            \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
-
 let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
 let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
 let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 
-let s:has_rg = executable('rg')
-let s:has_ag = executable('ag')
-let s:has_fd = executable('fd')
+let s:find_commands = {
+            \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
+            \ 'ag': 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""',
+            \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
+            \ }
 
-if s:has_rg || s:has_ag || s:has_fd
-    if s:has_fd && g:fzf_find_tool == 'fd'
-        let s:fzf_files_command     = 'fd --color=never --no-ignore-vcs --hidden --type file'
-        let s:fzf_all_files_command = 'fd --color=never --no-ignore --hidden --type file'
-    elseif s:has_ag && g:fzf_find_tool == 'ag'
-        let s:fzf_files_command     = 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""'
-        let s:fzf_all_files_command = 'ag --nocolor --unrestricted --hidden -l -g ""'
-    else
-        let s:fzf_files_command     = 'rg --color=never --no-ignore-vcs --ignore-parent --hidden --files'
-        let s:fzf_all_files_command = 'rg --color=never --no-ignore --hidden --files'
-    endif
+let s:find_all_commands = {
+            \ 'rg': 'rg --color=never --no-ignore --hidden --files',
+            \ 'ag': 'ag --nocolor --unrestricted --hidden -l -g ""',
+            \ 'fd': 'fd --color=never --no-ignore --hidden --type file',
+            \ }
+
+function! s:detect_fzf_available_commands() abort
+    let s:fzf_available_commands = []
+    for cmd in ['rg', 'ag', 'fd']
+        if executable(cmd)
+            call add(s:fzf_available_commands, cmd)
+        endif
+    endfor
+endfunction
+
+call s:detect_fzf_available_commands()
+
+" Setup FZF commands with better experiences
+if len(s:fzf_available_commands) > 0
+    let idx = index(s:fzf_available_commands, g:fzf_find_tool)
+    let cmd = get(s:fzf_available_commands, idx > -1 ? idx : 0)
+    let s:fzf_files_command     = s:find_commands[cmd]
+    let s:fzf_all_files_command = s:find_all_commands[cmd]
 
     function! s:build_fzf_options(command, bang) abort
         let cmd = s:fzf_follow_symlinks ? a:command . ' --follow' : a:command
@@ -61,9 +67,11 @@ if s:has_rg || s:has_ag || s:has_fd
     endfunction
 
     function! s:setup_fzf_commands() abort
+        " Files command with preview window
         command! -bang -nargs=? -complete=dir Files
                     \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
 
+        " All files command with preview window
         command! -bang -nargs=? -complete=dir AFiles
                     \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
     endfunction
@@ -82,6 +90,14 @@ if s:has_rg || s:has_ag || s:has_fd
     endfunction
 
     command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
+else
+    " Files command with preview window
+    command! -bang -nargs=? -complete=dir Files
+                \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
+
+    " All files command with preview window
+    command! -bang -nargs=? -complete=dir AFiles
+                \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 endif
 
 function! s:find_project_dir(starting_path) abort
@@ -108,8 +124,8 @@ endfunction
 
 command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
-if s:has_rg || s:has_ag
-    if s:has_rg
+if executable('rg') || executable('ag')
+    if executable('rg')
         let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
     else
         let s:fzf_grep_command = 'ag --color --hidden --vimgrep --smart-case'
