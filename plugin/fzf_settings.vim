@@ -4,11 +4,22 @@ if globpath(&rtp, 'plugin/fzf.vim') == ''
 endif
 
 if get(g:, 'loaded_fzf_settings_vim', 0)
-    " finish
+    finish
 endif
 
-if has('nvim') || has('gui_running')
-    let $FZF_DEFAULT_OPTS .= ' --inline-info'
+" Enable Floating FZF for NeoVim 0.4.0+ or Vim 8.0+
+let s:has_floating_feature = has('nvim-0.4.0') || (!has('nvim') && v:version >= 800)
+if s:has_floating_feature
+    let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
+else
+    if has('nvim') || has('gui_running')
+        let $FZF_DEFAULT_OPTS .= ' --inline-info'
+    endif
+
+    if !has('nvim')
+        " Make all FZF commands to use fullscreen layout in VIM
+        let g:fzf_layout = {}
+    endif
 endif
 
 let g:fzf_action = {
