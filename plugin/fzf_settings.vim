@@ -9,8 +9,13 @@ endif
 
 let g:fzf_settings_popup = get(g:, 'fzf_settings_popup', 0)
 
-" Enable Floating FZF for NeoVim 0.4.2+ or Vim 8.0+
-let s:has_floating_feature = has('nvim-0.4.2') || (!has('nvim') && has('popupwin') && v:version >= 800)
+" Check if Popup/Floating Win is available for FZF or not
+if has('nvim')
+    let s:has_floating_feature = exists('*nvim_win_set_config') && has('nvim-0.4.2')
+else
+    let s:has_floating_feature = exists('*popup_create') && has('patch-8.2.191')
+endif
+
 if s:has_floating_feature && g:fzf_settings_popup
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
 else
