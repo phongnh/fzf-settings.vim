@@ -7,16 +7,14 @@ if get(g:, 'loaded_fzf_settings_vim', 0)
     finish
 endif
 
-let g:fzf_settings_popup = get(g:, 'fzf_settings_popup', 0)
-
 " Check if Popup/Floating Win is available for FZF or not
 if has('nvim')
-    let s:has_floating_feature = exists('*nvim_win_set_config') && has('nvim-0.4.2')
+    let s:has_popup = exists('*nvim_win_set_config') && has('nvim-0.4.2')
 else
-    let s:has_floating_feature = exists('*popup_create') && has('patch-8.2.191')
+    let s:has_popup = exists('*popup_create') && has('patch-8.2.191')
 endif
 
-if s:has_floating_feature && g:fzf_settings_popup
+if s:has_popup
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
 else
     if has('nvim') || has('gui_running')
