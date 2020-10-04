@@ -35,6 +35,8 @@ let g:fzf_action = {
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
 
+let g:fzf_ctags = get(g:, 'fzf_ctags', 'ctags')
+
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', '?')
 endfunction
@@ -343,8 +345,8 @@ function! s:fzf_outline(bang) abort
     try
         let s:source = 'outline'
         let tag_cmds = [
-                    \ printf('ctags -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', &filetype, expand('%:S')),
-                    \ printf('ctags -f - --sort=no --excmd=number %s 2>/dev/null', expand('%:S'))
+                    \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, &filetype, expand('%:S')),
+                    \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, expand('%:S'))
                     \ ]
         call fzf#run(fzf#wrap('outline', {
                     \ 'source':  s:fzf_outline_source(tag_cmds),
