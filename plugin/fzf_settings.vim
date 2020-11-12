@@ -51,19 +51,17 @@ let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 
 let s:find_commands = {
             \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
-            \ 'ag': 'ag --nocolor --skip-vcs-ignores --hidden -l -g ""',
             \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
             \ }
 
 let s:find_all_commands = {
             \ 'rg': 'rg --color=never --no-ignore --hidden --files',
-            \ 'ag': 'ag --nocolor --unrestricted --hidden -l -g ""',
             \ 'fd': 'fd --color=never --no-ignore --hidden --type file',
             \ }
 
 function! s:detect_fzf_available_commands() abort
     let s:fzf_available_commands = []
-    for cmd in ['rg', 'ag', 'fd']
+    for cmd in ['rg', 'fd']
         if executable(cmd)
             call add(s:fzf_available_commands, cmd)
         endif
@@ -142,12 +140,8 @@ endfunction
 
 command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
-if executable('rg') || executable('ag')
-    if executable('rg')
-        let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
-    else
-        let s:fzf_grep_command = 'ag --color --hidden --vimgrep --smart-case'
-    endif
+if executable('rg')
+    let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
 
     " Ag command with preview window
     command! -bang -nargs=* Ag
