@@ -140,14 +140,6 @@ endfunction
 
 command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
-if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
-
-    " Ag command with preview window
-    command! -bang -nargs=* Ag
-                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-endif
-
 " Extra commands
 
 function! s:warn(message) abort
