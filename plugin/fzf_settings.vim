@@ -27,6 +27,9 @@ else
     endif
 endif
 
+let s:fzf_preview_key    = get(g:, 'fzf_preview_key', 'ctrl-/')
+let g:fzf_preview_window = ['right:50%:hidden', s:fzf_preview_key]
+
 let g:fzf_action = {
             \ 'ctrl-m': 'edit',
             \ 'ctrl-x': 'split',
@@ -38,11 +41,11 @@ let g:fzf_action = {
 let g:fzf_ctags = get(g:, 'fzf_ctags', 'ctags')
 
 function! s:fzf_file_preview_options(bang) abort
-    return fzf#vim#with_preview('right:60%:hidden', '?')
+    return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
 endfunction
 
 function! s:fzf_grep_preview_options(bang) abort
-    return a:bang ? fzf#vim#with_preview('up:60%', '?') : fzf#vim#with_preview('right:50%:hidden', '?')
+    return a:bang ? fzf#vim#with_preview('up:60%', s:fzf_preview_key) : fzf#vim#with_preview('right:50%:hidden', s:fzf_preview_key)
 endfunction
 
 let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
@@ -139,6 +142,14 @@ function! s:find_project_dir(starting_path) abort
 endfunction
 
 command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
+
+if executable('rg')
+    let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
+
+    " Rg command with preview window
+    command! -bang -nargs=* Rg
+                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
+endif
 
 " Extra commands
 
