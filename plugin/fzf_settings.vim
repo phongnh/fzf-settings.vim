@@ -38,7 +38,21 @@ let g:fzf_action = {
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
 
-let g:fzf_ctags = get(g:, 'fzf_ctags', 'ctags')
+function! s:IsUniversalCtags(ctags_path) abort
+    try
+        return system(printf('%s --version', a:ctags_path)) =~# 'Universal Ctags'
+    catch
+        return 0
+    endtry
+endfunction
+
+let g:fzf_ctags        = get(g:, 'fzf_ctags', 'ctags')
+let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.ctagsignore'))
+
+let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
+if s:IsUniversalCtags(g:fzf_ctags) && filereadable(g:fzf_ctags_ignore)
+    let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags, g:fzf_ctags_ignore)
+endif
 
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
