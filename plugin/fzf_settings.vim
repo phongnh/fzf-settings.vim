@@ -163,6 +163,10 @@ if executable('rg')
     " Rg command with preview window
     command! -bang -nargs=* Rg
                 \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
+    command! -bang -nargs=* FRg
+                \ call fzf#vim#grep(s:fzf_grep_command . ' -F ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
+    command! -bang -nargs=* RRg
+                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . <q-args>, 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
 endif
 
 " Extra commands
