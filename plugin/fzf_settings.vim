@@ -158,7 +158,7 @@ endfunction
 command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
 if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always --hidden --vimgrep --smart-case'
+    let s:fzf_grep_command = 'rg --color=always --column --line-number --no-heading --hidden --smart-case'
 
     " Rg command with preview window
     command! -bang -nargs=* Rg
