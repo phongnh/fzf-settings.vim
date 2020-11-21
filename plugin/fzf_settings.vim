@@ -62,37 +62,62 @@ function! s:fzf_grep_preview_options(bang) abort
     return a:bang ? fzf#vim#with_preview('up:60%', s:fzf_preview_key) : fzf#vim#with_preview('right:50%:hidden', s:fzf_preview_key)
 endfunction
 
-let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
-let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
-let s:fzf_follow_symlinks = g:fzf_follow_symlinks
-
-let s:find_commands = {
-            \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
-            \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
-            \ }
-
-let s:find_all_commands = {
-            \ 'rg': 'rg --color=never --no-ignore --hidden --files',
-            \ 'fd': 'fd --color=never --no-ignore --hidden --type file',
-            \ }
-
-function! s:detect_fzf_available_commands() abort
-    let s:fzf_available_commands = []
-    for cmd in ['rg', 'fd']
-        if executable(cmd)
-            call add(s:fzf_available_commands, cmd)
-        endif
-    endfor
-endfunction
-
-call s:detect_fzf_available_commands()
+let s:fzf_available_commands = filter(['rg', 'fd'], 'executable(v:val)')
 
 " Setup FZF commands with better experiences
 if len(s:fzf_available_commands) > 0
-    let idx = index(s:fzf_available_commands, g:fzf_find_tool)
-    let cmd = get(s:fzf_available_commands, idx > -1 ? idx : 0)
-    let s:fzf_files_command     = s:find_commands[cmd]
-    let s:fzf_all_files_command = s:find_all_commands[cmd]
+    let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
+    let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
+    let s:fzf_follow_symlinks = g:fzf_follow_symlinks
+
+    let s:find_commands = {
+                \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
+                \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
+                \ }
+
+    let s:find_all_commands = {
+                \ 'rg': 'rg --color=never --no-ignore --hidden --files',
+                \ 'fd': 'fd --color=never --no-ignore --hidden --type file',
+                \ }
+
+    function! s:detect_fzf_current_command() abort
+        let idx = index(s:fzf_available_commands, g:fzf_find_tool)
+        let s:fzf_current_command = get(s:fzf_available_commands, idx > -1 ? idx : 0)
+    endfunction
+
+    function! s:build_fzf_commands(...) abort
+        let s:fzf_files_command = s:find_commands[s:fzf_current_command]
+        let s:fzf_all_files_command = s:find_all_commands[s:fzf_current_command]
+    endfunction
+
+    function! s:print_fzf_current_command_info() abort
+        echo 'FZF is using command `' . s:fzf_files_command . '`!'
+    endfunction
+
+    command! PrintFZFCurrentCommandInfo call <SID>print_fzf_current_command_info()
+
+    function! s:change_fzf_files_commands(bang, command) abort
+        " Reset to default command
+        if a:bang
+            call s:detect_fzf_current_command()
+        elseif strlen(a:command)
+            if index(s:fzf_available_commands, a:command) == -1
+                return
+            endif
+            let s:fzf_current_command = a:command
+        else
+            let idx = index(s:fzf_available_commands, s:fzf_current_command)
+            let s:fzf_current_command = get(s:fzf_available_commands, idx + 1, s:fzf_available_commands[0])
+        endif
+        call s:build_fzf_commands()
+        call s:print_fzf_current_command_info()
+    endfunction
+
+    function! s:list_fzf_available_commands(...) abort
+        return s:fzf_available_commands
+    endfunction
+
+    command! -nargs=? -bang -complete=customlist,<SID>list_fzf_available_commands ChangeFzfFilesCommands call <SID>change_fzf_files_commands(<bang>0, <q-args>)
 
     function! s:build_fzf_options(command, bang) abort
         let cmd = s:fzf_follow_symlinks ? a:command . ' --follow' : a:command
@@ -121,7 +146,10 @@ if len(s:fzf_available_commands) > 0
         endif
     endfunction
 
-    command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
+    command! ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
+
+    call s:detect_fzf_current_command()
+    call s:build_fzf_commands()
 else
     " Files command with preview window
     command! -bang -nargs=? -complete=dir Files
@@ -154,7 +182,7 @@ function! s:find_project_dir(starting_path) abort
     return ''
 endfunction
 
-command! -bang -nargs=0 PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
+command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
 if executable('rg')
     let s:fzf_grep_command = 'rg --color=always --column --line-number --no-heading --hidden --smart-case'
