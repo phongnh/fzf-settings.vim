@@ -119,7 +119,6 @@ if len(s:fzf_available_commands) > 0
             let s:fzf_follow_symlinks = 0
             echo 'FZF does not follow symlinks!'
         endif
-        call s:setup_fzf_commands()
     endfunction
 
     command! -nargs=0 ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
