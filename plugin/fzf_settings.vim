@@ -54,6 +54,16 @@ if s:IsUniversalCtags(g:fzf_ctags) && filereadable(g:fzf_ctags_ignore)
     let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags, g:fzf_ctags_ignore)
 endif
 
+function! s:append_fzf_layout_option(opts, ...)
+    if !empty(get(a:, 1, ''))
+        return a:opts . ' ' . a:1
+    elseif s:has_popup
+        return a:opts . ' --layout=reverse'
+    else
+        return a:opts . ' --layout=reverse-list'
+    endif
+endfunction
+
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
 endfunction
@@ -296,7 +306,7 @@ function! s:fzf_quickfix(bang) abort
     call fzf#run(fzf#wrap('quickfix', {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
-                \ 'options': '--layout=reverse-list --prompt "Quickfix> "'
+                \ 'options': s:append_fzf_layout_option('--prompt "Quickfix> "'),
                 \ }, a:bang))
 endfunction
 
@@ -314,7 +324,7 @@ function! s:fzf_location_list(bang) abort
     call fzf#run(fzf#wrap('location_list', {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
-                \ 'options': '--layout=reverse-list --prompt "LocationList> "'
+                \ 'options': s:append_fzf_layout_option('--prompt "LocationList> "'),
                 \ }, a:bang))
 endfunction
 
@@ -335,7 +345,7 @@ function! s:fzf_registers(bang) abort
     call fzf#run(fzf#wrap('registers', {
                 \ 'source':  items,
                 \ 'sink':    function('s:fzf_yank_sink'),
-                \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
+                \ 'options': s:append_fzf_layout_option('+m --prompt "Registers> "'),
                 \ }, a:bang))
 endfunction
 command! -bang -nargs=0 Registers call s:fzf_registers(<bang>0)
@@ -396,7 +406,7 @@ function! s:fzf_outline(bang) abort
         call fzf#run(fzf#wrap('outline', {
                     \ 'source':  s:fzf_outline_source(tag_cmds),
                     \ 'sink*':   function('s:fzf_outline_sink'),
-                    \ 'options': '--layout=reverse-list -m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
+                    \ 'options': s:append_fzf_layout_option('-m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'),
                     \ }, a:bang))
     catch
         call s:warn(v:exception)
