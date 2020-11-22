@@ -71,13 +71,13 @@ if len(s:fzf_available_commands) > 0
     let s:fzf_follow_symlinks = g:fzf_follow_symlinks
 
     let s:find_commands = {
-                \ 'rg': 'rg --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden --files',
-                \ 'fd': 'fd --color=never --no-ignore-vcs --hidden --type file',
+                \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
+                \ 'fd': 'fd --type file --color never --no-ignore-vcs --hidden',
                 \ }
 
     let s:find_all_commands = {
-                \ 'rg': 'rg --color=never --no-ignore --hidden --files',
-                \ 'fd': 'fd --color=never --no-ignore --hidden --type file',
+                \ 'rg': 'rg --files --color never --no-ignore --hidden',
+                \ 'fd': 'fd --type file --color never --no-ignore --hidden',
                 \ }
 
     function! s:detect_fzf_current_command() abort
@@ -185,7 +185,7 @@ endfunction
 command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
 if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always --column --line-number --no-heading --hidden --smart-case'
+    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --column --hidden --smart-case'
 
     " Rg command with preview window
     command! -bang -nargs=* Rg
