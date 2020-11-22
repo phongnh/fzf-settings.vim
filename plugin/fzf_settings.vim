@@ -186,6 +186,9 @@ command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(
 
 if executable('rg')
     let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --column --hidden --smart-case'
+    if get(g:, 'fzf_grep_ignore_vcs', 0)
+        let s:fzf_grep_command .= ' --no-ignore-vcs'
+    endif
 
     " Rg command with preview window
     command! -bang -nargs=* Rg
