@@ -80,14 +80,30 @@ if len(s:fzf_available_commands) > 0
                 \ 'fd': 'fd --type file --color never --no-ignore --hidden',
                 \ }
 
+    function! s:build_find_command() abort
+        let l:cmd = s:find_commands[s:fzf_current_command]
+        if s:fzf_follow_symlinks
+            let l:cmd .= ' --follow'
+        endif
+        return l:cmd
+    endfunction
+
+    function! s:build_find_all_command() abort
+        let l:cmd = s:find_all_commands[s:fzf_current_command]
+        if s:fzf_follow_symlinks
+            let l:cmd .= ' --follow'
+        endif
+        return l:cmd
+    endfunction
+
     function! s:detect_fzf_current_command() abort
         let idx = index(s:fzf_available_commands, g:fzf_find_tool)
         let s:fzf_current_command = get(s:fzf_available_commands, idx > -1 ? idx : 0)
     endfunction
 
-    function! s:build_fzf_commands(...) abort
-        let s:fzf_files_command = s:find_commands[s:fzf_current_command]
-        let s:fzf_all_files_command = s:find_all_commands[s:fzf_current_command]
+    function! s:build_fzf_commands() abort
+        let s:fzf_files_command = s:build_find_command()
+        let s:fzf_all_files_command = s:build_find_all_command()
     endfunction
 
     function! s:print_fzf_current_command_info() abort
@@ -120,21 +136,16 @@ if len(s:fzf_available_commands) > 0
     command! -nargs=? -bang -complete=customlist,<SID>list_fzf_available_commands ChangeFzfFilesCommands call <SID>change_fzf_files_commands(<bang>0, <q-args>)
 
     function! s:build_fzf_options(command, bang) abort
-        let cmd = s:fzf_follow_symlinks ? a:command . ' --follow' : a:command
-        return extend(s:fzf_file_preview_options(a:bang), { 'source': cmd })
+        return extend(s:fzf_file_preview_options(a:bang), { 'source': a:command })
     endfunction
 
-    function! s:setup_fzf_commands() abort
-        " Files command with preview window
-        command! -bang -nargs=? -complete=dir Files
-                    \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
+    " Files command with preview window
+    command! -bang -nargs=? -complete=dir Files
+                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_files_command, <bang>0), <bang>0)
 
-        " All files command with preview window
-        command! -bang -nargs=? -complete=dir AFiles
-                    \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
-    endfunction
-
-    call s:setup_fzf_commands()
+    " All files command with preview window
+    command! -bang -nargs=? -complete=dir AFiles
+                \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
 
     function! s:toggle_fzf_follow_symlinks() abort
         if s:fzf_follow_symlinks == 0
@@ -144,6 +155,7 @@ if len(s:fzf_available_commands) > 0
             let s:fzf_follow_symlinks = 0
             echo 'FZF does not follow symlinks!'
         endif
+        call s:build_fzf_commands()
     endfunction
 
     command! ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
