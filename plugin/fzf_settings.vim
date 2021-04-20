@@ -66,9 +66,9 @@ let s:fzf_available_commands = filter(['rg', 'fd'], 'executable(v:val)')
 
 " Setup FZF commands with better experiences
 if len(s:fzf_available_commands) > 0
-    let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'rg')
-    let g:fzf_follow_symlinks = get(g:, 'fzf_follow_symlinks', 0)
-    let s:fzf_follow_symlinks = g:fzf_follow_symlinks
+    let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'rg')
+    let g:fzf_follow_links = get(g:, 'fzf_follow_symlinks', get(g:, 'fzf_follow_links', 0))
+    let s:fzf_follow_links = g:fzf_follow_links
 
     let s:find_commands = {
                 \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
@@ -82,7 +82,7 @@ if len(s:fzf_available_commands) > 0
 
     function! s:build_find_command() abort
         let l:cmd = s:find_commands[s:fzf_current_command]
-        if s:fzf_follow_symlinks
+        if s:fzf_follow_links
             let l:cmd .= ' --follow'
         endif
         return l:cmd
@@ -90,7 +90,7 @@ if len(s:fzf_available_commands) > 0
 
     function! s:build_find_all_command() abort
         let l:cmd = s:find_all_commands[s:fzf_current_command]
-        if s:fzf_follow_symlinks
+        if s:fzf_follow_links
             let l:cmd .= ' --follow'
         endif
         return l:cmd
@@ -147,18 +147,19 @@ if len(s:fzf_available_commands) > 0
     command! -bang -nargs=? -complete=dir AFiles
                 \ call fzf#vim#files(<q-args>, s:build_fzf_options(s:fzf_all_files_command, <bang>0), <bang>0)
 
-    function! s:toggle_fzf_follow_symlinks() abort
-        if s:fzf_follow_symlinks == 0
-            let s:fzf_follow_symlinks = 1
+    function! s:toggle_fzf_follow_links() abort
+        if s:fzf_follow_links == 0
+            let s:fzf_follow_links = 1
             echo 'FZF follows symlinks!'
         else
-            let s:fzf_follow_symlinks = 0
+            let s:fzf_follow_links = 0
             echo 'FZF does not follow symlinks!'
         endif
         call s:build_fzf_commands()
     endfunction
 
-    command! ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_symlinks()
+    command! ToggleFzfFollowSymlinks call <SID>toggle_fzf_follow_links()
+    command! ToggleFzfFollowLinks call <SID>toggle_fzf_follow_links()
 
     call s:detect_fzf_current_command()
     call s:build_fzf_commands()
