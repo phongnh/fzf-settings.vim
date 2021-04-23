@@ -253,13 +253,13 @@ endfunction
 function! s:fzf_jumps(bang) abort
     let s:source = 'jumps'
     call fzf#run(fzf#wrap('jumps', {
-                \ 'source':  <sid>fzf_jumplist(),
+                \ 'source':  s:fzf_jumplist(),
                 \ 'sink':    function('s:fzf_bufopen'),
                 \ 'options': '+m --prompt "Jumps> "',
                 \ }, a:bang))
 endfunction
 
-command! -bang -nargs=0 Jumps call <SID>fzf_jumps(<bang>0)
+command! -bang Jumps call <SID>fzf_jumps(<bang>0)
 
 function! s:fzf_yank_sink(e) abort
     let @" = a:e
@@ -275,12 +275,13 @@ endfunction
 function! s:fzf_messages(bang) abort
     let s:source = 'messages'
     call fzf#run(fzf#wrap('messages', {
-                \ 'source':  <sid>fzf_messages_source(),
+                \ 'source':  s:fzf_messages_source(),
                 \ 'sink':    function('s:fzf_yank_sink'),
                 \ 'options': '+m --prompt "Messages> "',
                 \ }, a:bang))
 endfunction
-command! -bang -nargs=0 Messages call <SID>fzf_messages(<bang>0)
+
+command! -bang Messages call <SID>fzf_messages(<bang>0)
 
 function! s:fzf_open_quickfix_item(e) abort
     let line = a:e
@@ -301,7 +302,7 @@ endfunction
 
 function! s:fzf_quickfix(bang) abort
     let s:source = 'quickfix'
-    let items = <sid>fzf_get_quickfix()
+    let items = s:fzf_get_quickfix()
     if len(items) == 0
         call s:warn('No quickfix items!')
         return
@@ -319,7 +320,7 @@ endfunction
 
 function! s:fzf_location_list(bang) abort
     let s:source = 'location_list'
-    let items = <sid>fzf_get_location_list()
+    let items = s:fzf_get_location_list()
     if len(items) == 0
         call s:warn('No location list items!')
         return
@@ -331,8 +332,8 @@ function! s:fzf_location_list(bang) abort
                 \ }, a:bang))
 endfunction
 
-command! -bang -nargs=0 Quickfix call s:fzf_quickfix(<bang>0)
-command! -bang -nargs=0 LocationList call s:fzf_location_list(<bang>0)
+command! -bang Quickfix call s:fzf_quickfix(<bang>0)
+command! -bang LocationList call s:fzf_location_list(<bang>0)
 
 function! s:fzf_get_registers() abort
     return split(call('execute', ['registers']), '\n')[1:]
@@ -340,7 +341,7 @@ endfunction
 
 function! s:fzf_registers(bang) abort
     let s:source = 'registers'
-    let items = <sid>fzf_get_registers()
+    let items = s:fzf_get_registers()
     if len(items) == 0
         call s:warn('No register items!')
         return
@@ -351,7 +352,8 @@ function! s:fzf_registers(bang) abort
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
                 \ }, a:bang))
 endfunction
-command! -bang -nargs=0 Registers call s:fzf_registers(<bang>0)
+
+command! -bang Registers call s:fzf_registers(<bang>0)
 
 if exists('*trim')
     function! s:strip(str) abort
@@ -416,6 +418,6 @@ function! s:fzf_outline(bang) abort
     endtry
 endfunction
 
-command! -bang -nargs=0 BOutline call s:fzf_outline(<bang>0)
+command! -bang BOutline call s:fzf_outline(<bang>0)
 
 let g:loaded_fzf_settings_vim = 1
