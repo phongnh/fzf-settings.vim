@@ -335,6 +335,13 @@ endfunction
 command! -bang Quickfix call s:fzf_quickfix(<bang>0)
 command! -bang LocationList call s:fzf_location_list(<bang>0)
 
+function! s:fzf_yank_register(line) abort
+    call setreg('"', getreg(a:line[7]))
+    echohl ModeMsg
+    echo 'Yanked!'
+    echohl None
+endfunction
+
 function! s:fzf_get_registers() abort
     return split(call('execute', ['registers']), '\n')[1:]
 endfunction
@@ -348,7 +355,7 @@ function! s:fzf_registers(bang) abort
     endif
     call fzf#run(fzf#wrap('registers', {
                 \ 'source':  items,
-                \ 'sink':    function('s:fzf_yank_sink'),
+                \ 'sink':    function('s:fzf_yank_register'),
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
                 \ }, a:bang))
 endfunction
