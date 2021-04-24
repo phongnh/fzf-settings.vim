@@ -180,16 +180,22 @@ function! s:find_project_dir(starting_path) abort
 
     for root_marker in ['.git', '.hg', '.svn']
         let root_dir = finddir(root_marker, a:starting_path . ';')
-        if empty(root_dir)
-            continue
-        endif
-
         let root_dir = substitute(root_dir, root_marker, '', '')
+
         if !empty(root_dir)
             let root_dir = fnamemodify(root_dir, ':p:~:.')
+            return root_dir
         endif
+    endfor
 
-        return root_dir
+    for root_marker in ['.hex', 'mix.exs', 'Gemfile']
+        let root_dir = findfile(root_marker, a:starting_path . ';')
+        let root_dir = substitute(root_dir, root_marker, '', '')
+
+        if !empty(root_dir)
+            let root_dir = fnamemodify(root_dir, ':p:~:.')
+            return root_dir
+        endif
     endfor
 
     return ''
