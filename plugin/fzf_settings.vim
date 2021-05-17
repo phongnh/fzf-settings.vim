@@ -49,9 +49,10 @@ endfunction
 let g:fzf_ctags        = get(g:, 'fzf_ctags', 'ctags')
 let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.ctagsignore'))
 
-let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
-if s:IsUniversalCtags(g:fzf_ctags) && filereadable(g:fzf_ctags_ignore)
+if get(g:, 'fzf_universal_ctags', s:IsUniversalCtags(g:fzf_ctags)) && filereadable(g:fzf_ctags_ignore)
     let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags, g:fzf_ctags_ignore)
+else
+    let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
 endif
 
 function! s:fzf_file_preview_options(bang) abort
