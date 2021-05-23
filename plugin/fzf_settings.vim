@@ -55,6 +55,64 @@ else
     let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
 endif
 
+let g:fzf_file_root_markers = [
+            \ 'Gemfile',
+            \ 'rebar.config',
+            \ 'mix.exs',
+            \ 'Cargo.toml',
+            \ 'shard.yml',
+            \ 'go.mod',
+            \ ]
+
+let g:fzf_root_markers = ['.git', '.hg', '.svn', '.bzr', '_darcs'] + g:fzf_file_root_markers
+
+let s:fzf_ignored_root_dirs = [
+            \ '/',
+            \ '/root',
+            \ '/Users',
+            \ '/home',
+            \ '/usr',
+            \ '/usr/local',
+            \ '/opt',
+            \ '/etc',
+            \ '/var',
+            \ expand('~'),
+            \ ]
+
+function! s:find_project_dir(starting_dir) abort
+    if empty(a:starting_dir)
+        return ''
+    endif
+
+    let l:root_dir = ''
+
+    for l:root_marker in g:fzf_root_markers
+        if index(g:fzf_file_root_markers, l:root_marker) > -1
+            let l:root_dir = findfile(l:root_marker, a:starting_dir . ';')
+        else
+            let l:root_dir = finddir(l:root_marker, a:starting_dir . ';')
+        endif
+        let l:root_dir = substitute(l:root_dir, l:root_marker . '$', '', '')
+
+        if strlen(l:root_dir)
+            let l:root_dir = fnamemodify(l:root_dir, ':p:h')
+            break
+        endif
+    endfor
+
+    if empty(l:root_dir) || index(s:fzf_ignored_root_dirs, l:root_dir) > -1
+        if stridx(a:starting_dir, getcwd()) == 0
+            let l:root_dir = getcwd()
+        else
+            let l:root_dir = a:starting_dir
+        endif
+    endif
+
+    return fnamemodify(l:root_dir, ':~')
+endfunction
+
+command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
+
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
 endfunction
@@ -173,36 +231,6 @@ else
     command! -bang -nargs=? -complete=dir AFiles
                 \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 endif
-
-function! s:find_project_dir(starting_path) abort
-    if empty(a:starting_path)
-        return ''
-    endif
-
-    for root_marker in ['.git', '.hg', '.svn']
-        let root_dir = finddir(root_marker, a:starting_path . ';')
-        let root_dir = substitute(root_dir, root_marker . '$', '', '')
-
-        if !empty(root_dir)
-            let root_dir = fnamemodify(root_dir, ':p:~:.')
-            return root_dir
-        endif
-    endfor
-
-    for root_marker in ['.hex', 'mix.exs', 'Gemfile']
-        let root_dir = findfile(root_marker, a:starting_path . ';')
-        let root_dir = substitute(root_dir, root_marker . '$', '', '')
-
-        if !empty(root_dir)
-            let root_dir = fnamemodify(root_dir, ':p:~:.')
-            return root_dir
-        endif
-    endfor
-
-    return ''
-endfunction
-
-command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
 
 if executable('rg')
     let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --column --hidden --smart-case'
