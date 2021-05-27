@@ -101,14 +101,16 @@ function! s:find_project_dir(starting_dir) abort
     endfor
 
     if empty(l:root_dir) || index(s:fzf_ignored_root_dirs, l:root_dir) > -1
-        if stridx(a:starting_dir, getcwd()) == 0
+        if index(s:fzf_ignored_root_dirs, getcwd()) > -1
+            let l:root_dir = a:starting_dir
+        elseif stridx(a:starting_dir, getcwd()) == 0
             let l:root_dir = getcwd()
         else
             let l:root_dir = a:starting_dir
         endif
     endif
 
-    return fnamemodify(l:root_dir, ':~')
+    return fnamemodify(l:root_dir, ':p:~')
 endfunction
 
 command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') s:find_project_dir(expand('%:p:h'))
