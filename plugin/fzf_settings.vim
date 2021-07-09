@@ -38,7 +38,7 @@ let g:fzf_action = {
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
 
-function! s:IsUniversalCtags(ctags_path) abort
+function! s:is_universal_ctags(ctags_path) abort
     try
         return system(printf('%s --version', a:ctags_path)) =~# 'Universal Ctags'
     catch
@@ -49,7 +49,7 @@ endfunction
 let g:fzf_ctags        = get(g:, 'fzf_ctags', 'ctags')
 let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.ctagsignore'))
 
-if get(g:, 'fzf_universal_ctags', s:IsUniversalCtags(g:fzf_ctags)) && filereadable(g:fzf_ctags_ignore)
+if get(g:, 'fzf_universal_ctags', s:is_universal_ctags(g:fzf_ctags)) && filereadable(g:fzf_ctags_ignore)
     let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags, g:fzf_ctags_ignore)
 else
     let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
@@ -141,7 +141,7 @@ if len(s:fzf_available_commands) > 0
                 \ 'fd': 'fd --type file --color never --no-ignore --hidden',
                 \ }
 
-    function! s:build_find_command() abort
+    function! s:build_fzf_find_command() abort
         let l:cmd = s:find_commands[s:fzf_current_command]
         if s:fzf_follow_links
             let l:cmd .= ' --follow'
@@ -149,7 +149,7 @@ if len(s:fzf_available_commands) > 0
         return l:cmd
     endfunction
 
-    function! s:build_find_all_command() abort
+    function! s:build_fzf_find_all_command() abort
         let l:cmd = s:find_all_commands[s:fzf_current_command]
         if s:fzf_follow_links
             let l:cmd .= ' --follow'
@@ -163,8 +163,8 @@ if len(s:fzf_available_commands) > 0
     endfunction
 
     function! s:build_fzf_commands() abort
-        let s:fzf_files_command = s:build_find_command()
-        let s:fzf_all_files_command = s:build_find_all_command()
+        let s:fzf_files_command = s:build_fzf_find_command()
+        let s:fzf_all_files_command = s:build_fzf_find_all_command()
     endfunction
 
     function! s:print_fzf_current_command_info() abort
