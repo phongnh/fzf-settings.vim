@@ -125,10 +125,11 @@ endfunction
 
 let s:fzf_available_commands = filter(['rg', 'fd'], 'executable(v:val)')
 
+let g:fzf_follow_links = get(g:, 'fzf_follow_links', get(g:, 'fzf_follow_symlinks', 0))
+
 " Setup FZF commands with better experiences
 if len(s:fzf_available_commands) > 0
     let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'rg')
-    let g:fzf_follow_links = get(g:, 'fzf_follow_symlinks', get(g:, 'fzf_follow_links', 0))
     let s:fzf_follow_links = g:fzf_follow_links
 
     let s:find_commands = {
@@ -235,7 +236,10 @@ else
 endif
 
 if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --column --hidden --smart-case'
+    let s:fzf_grep_command = 'rg --color=always --max-columns=150 -H --no-heading --vimgrep --smart-case --hidden'
+    if g:fzf_follow_links
+        let s:fzf_grep_command .= ' --follow'
+    endif
     if get(g:, 'fzf_grep_ignore_vcs', 0)
         let s:fzf_grep_command .= ' --no-ignore-vcs'
     endif
