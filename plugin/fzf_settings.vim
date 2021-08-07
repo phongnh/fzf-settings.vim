@@ -236,7 +236,7 @@ else
 endif
 
 if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always --max-columns=150 -H --no-heading --vimgrep --smart-case --hidden'
+    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
     if g:fzf_follow_links
         let s:fzf_grep_command .= ' --follow'
     endif
