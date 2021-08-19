@@ -123,23 +123,23 @@ function! s:fzf_grep_preview_options(bang) abort
     return a:bang ? fzf#vim#with_preview('up:60%', s:fzf_preview_key) : fzf#vim#with_preview('right:50%:hidden', s:fzf_preview_key)
 endfunction
 
-let s:fzf_available_commands = filter(['rg', 'fd'], 'executable(v:val)')
+let s:fzf_available_commands = filter(['fd', 'rg'], 'executable(v:val)')
 
 let g:fzf_follow_links = get(g:, 'fzf_follow_links', get(g:, 'fzf_follow_symlinks', 0))
 
 " Setup FZF commands with better experiences
 if len(s:fzf_available_commands) > 0
-    let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'rg')
+    let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
     let s:fzf_follow_links = g:fzf_follow_links
 
     let s:find_commands = {
-                \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
                 \ 'fd': 'fd --type file --color never --no-ignore-vcs --hidden',
+                \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
                 \ }
 
     let s:find_all_commands = {
-                \ 'rg': 'rg --files --color never --no-ignore --hidden',
                 \ 'fd': 'fd --type file --color never --no-ignore --hidden',
+                \ 'rg': 'rg --files --color never --no-ignore --hidden',
                 \ }
 
     function! s:build_fzf_find_command() abort
