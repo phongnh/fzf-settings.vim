@@ -138,8 +138,8 @@ if len(s:fzf_available_commands) > 0
                 \ }
 
     let s:find_all_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore --hidden',
-                \ 'rg': 'rg --files --color never --no-ignore --hidden',
+                \ 'fd': 'fd --type file --color never --no-ignore --hidden --follow',
+                \ 'rg': 'rg --files --color never --no-ignore --hidden --follow',
                 \ }
 
     function! s:build_fzf_find_command() abort
@@ -152,9 +152,6 @@ if len(s:fzf_available_commands) > 0
 
     function! s:build_fzf_find_all_command() abort
         let l:cmd = s:find_all_commands[s:fzf_current_command]
-        if s:fzf_follow_links
-            let l:cmd .= ' --follow'
-        endif
         return l:cmd
     endfunction
 
