@@ -75,12 +75,12 @@ if len(s:fzf_available_commands) > 0
     let s:fzf_follow_links = g:fzf_follow_links
 
     let s:find_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore-vcs --hidden',
+                \ 'fd': 'fd --type file --color never --no-ignore-vcs --hidden --strip-cwd-prefix',
                 \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
                 \ }
 
     let s:find_all_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore --hidden --follow',
+                \ 'fd': 'fd --type file --color never --no-ignore --hidden --follow --strip-cwd-prefix',
                 \ 'rg': 'rg --files --color never --no-ignore --hidden --follow',
                 \ }
 
