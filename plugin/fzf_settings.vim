@@ -201,6 +201,21 @@ function! s:warn(message) abort
     return 0
 endfunction
 
+function! s:fzf_mru_cwd_source() abort
+    let l:cwd = getcwd()
+    return filter(fzf#vim#_recent_files(), 'fnamemodify(v:val, ":p") =~ ("^" . l:cwd)')
+endfunction
+
+function! s:fzf_mru_cwd(bang) abort
+    let s:source = 'history-files-in-cwd'
+    call fzf#run(fzf#wrap('history-files-in-cwd', {
+                \ 'source':  s:fzf_mru_cwd_source(),
+                \ 'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> ']
+                \ }, a:bang))
+endfunction
+
+command! -bang MruCwd call <SID>fzf_mru_cwd(<bang>0)
+
 function! s:fzf_bufopen(e) abort
     let list = split(a:e)
     if len(list) < 4
