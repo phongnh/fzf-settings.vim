@@ -5,6 +5,7 @@ let g:fzf_file_root_markers = [
             \ 'Cargo.toml',
             \ 'shard.yml',
             \ 'go.mod',
+            \ '.root',
             \ ]
 
 let g:fzf_root_markers = ['.git', '.hg', '.svn', '.bzr', '_darcs'] + g:fzf_file_root_markers
