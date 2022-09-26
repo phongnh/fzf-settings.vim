@@ -406,8 +406,9 @@ endfunction
 function! s:fzf_outline(bang) abort
     try
         let s:source = 'outline'
+        let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
         let tag_cmds = [
-                    \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, &filetype, expand('%:S')),
+                    \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, expand('%:S')),
                     \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, expand('%:S'))
                     \ ]
         call fzf#run(fzf#wrap('outline', {
