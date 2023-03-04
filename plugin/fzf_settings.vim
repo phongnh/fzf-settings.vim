@@ -201,17 +201,67 @@ function! s:warn(message) abort
     return 0
 endfunction
 
-function! s:fzf_mru_cwd_source() abort
-    let l:cwd = getcwd()
-    return filter(fzf#vim#_recent_files(), 'fnamemodify(v:val, ":p") =~ ("^" . l:cwd)')
+let s:fzf_mru_exclude = [
+            \ '^/usr/',
+            \ '^/opt/',
+            \ '^/etc/',
+            \ '^/var/',
+            \ '^/tmp/',
+            \ '^/private/',
+            \ '\.git/',
+            \ '/\?\.gems/',
+            \ '\.vim/plugged/',
+            \ '\.fugitiveblame$',
+            \ 'COMMIT_EDITMSG$',
+            \ 'git-rebase-todo$',
+            \ ]
+
+function! s:fzf_vim_recent_files() abort
+    let recent_files = fzf#vim#_uniq(
+                \ map(
+                \   filter([expand('%')], 'len(v:val)')
+                \   + filter(map(fzf#vim#_buflisted_sorted(), 'bufname(v:val)'), 'len(v:val)')
+                \   + filter(copy(v:oldfiles), "filereadable(fnamemodify(v:val, ':p'))"),
+                \   'fnamemodify(v:val, ":~:.")'
+                \ )
+                \ )
+
+    for l:pattern in s:fzf_mru_exclude
+        call filter(recent_files, 'v:val !~ l:pattern')
+    endfor
+
+    return recent_files
+endfunction
+
+function! s:fzf_mru(bang)
+    let s:source = 'mru'
+    call fzf#run(fzf#wrap(
+                \ s:source,
+                \ fzf#vim#with_preview({
+                \   'source': s:fzf_vim_recent_files(),
+                \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
+                \ }, 'right:60%', s:fzf_preview_key),
+                \ a:bang
+                \ ))
+endfunction
+
+command! -bang Mru call <SID>fzf_mru(<bang>0)
+
+function! s:fzf_vim_recent_files_in_cwd() abort
+    let l:pattern = '^' . getcwd()
+    return filter(s:fzf_vim_recent_files(), 'fnamemodify(v:val, ":p") =~ l:pattern')
 endfunction
 
 function! s:fzf_mru_cwd(bang) abort
-    let s:source = 'history-files-in-cwd'
-    call fzf#run(fzf#wrap(s:source, {
-                \ 'source':  s:fzf_mru_cwd_source(),
-                \ 'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> ']
-                \ }, a:bang))
+    let s:source = 'mru-cwd'
+    call fzf#run(fzf#wrap(
+                \ s:source,
+                \ fzf#vim#with_preview({
+                \   'source': s:fzf_vim_recent_files_in_cwd(),
+                \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
+                \ }, 'right:60%', s:fzf_preview_key),
+                \ a:bang
+                \ ))
 endfunction
 
 command! -bang MruCwd call <SID>fzf_mru_cwd(<bang>0)
