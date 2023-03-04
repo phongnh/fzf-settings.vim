@@ -208,7 +208,7 @@ endfunction
 
 function! s:fzf_mru_cwd(bang) abort
     let s:source = 'history-files-in-cwd'
-    call fzf#run(fzf#wrap('history-files-in-cwd', {
+    call fzf#run(fzf#wrap(s:source, {
                 \ 'source':  s:fzf_mru_cwd_source(),
                 \ 'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> ']
                 \ }, a:bang))
@@ -269,7 +269,7 @@ endfunction
 
 function! s:fzf_messages(bang) abort
     let s:source = 'messages'
-    call fzf#run(fzf#wrap('messages', {
+    call fzf#run(fzf#wrap(s:source, {
                 \ 'source':  s:fzf_messages_source(),
                 \ 'sink':    function('s:fzf_yank_sink'),
                 \ 'options': '+m --prompt "Messages> "',
@@ -302,7 +302,7 @@ function! s:fzf_quickfix(bang) abort
         call s:warn('No quickfix items!')
         return
     endif
-    call fzf#run(fzf#wrap('quickfix', {
+    call fzf#run(fzf#wrap(s:source, {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
                 \ 'options': '--layout=reverse-list --prompt "Quickfix> "'
@@ -320,7 +320,7 @@ function! s:fzf_location_list(bang) abort
         call s:warn('No location list items!')
         return
     endif
-    call fzf#run(fzf#wrap('location_list', {
+    call fzf#run(fzf#wrap(s:source, {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
                 \ 'options': '--layout=reverse-list --prompt "LocationList> "'
@@ -348,7 +348,7 @@ function! s:fzf_registers(bang) abort
         call s:warn('No register items!')
         return
     endif
-    call fzf#run(fzf#wrap('registers', {
+    call fzf#run(fzf#wrap(s:source, {
                 \ 'source':  items,
                 \ 'sink':    function('s:fzf_yank_register'),
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
@@ -411,7 +411,7 @@ function! s:fzf_outline(bang) abort
                     \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, expand('%:S')),
                     \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, expand('%:S'))
                     \ ]
-        call fzf#run(fzf#wrap('outline', {
+        call fzf#run(fzf#wrap(s:source, {
                     \ 'source':  s:fzf_outline_source(tag_cmds),
                     \ 'sink*':   function('s:fzf_outline_sink'),
                     \ 'options': '--layout=reverse-list -m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
