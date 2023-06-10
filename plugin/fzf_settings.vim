@@ -111,7 +111,7 @@ if len(s:fzf_available_commands) > 0
         echo 'FZF is using command `' . s:fzf_files_command . '`!'
     endfunction
 
-    command! PrintFZFCurrentCommandInfo call <SID>print_fzf_current_command_info()
+    command! PrintFzfCurrentCommandInfo call <SID>print_fzf_current_command_info()
 
     function! s:change_fzf_files_commands(bang, command) abort
         " Reset to default command
