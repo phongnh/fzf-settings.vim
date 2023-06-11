@@ -220,10 +220,12 @@ function! s:warn(message) abort
     return 0
 endfunction
 
-command! -bang Mru      call fzf_settings#vim#mru(<bang>0)
-command! -bang MruCwd   call fzf_settings#vim#mru_in_cwd(<bang>0)
-command! -bang MruInCwd call fzf_settings#vim#mru_in_cwd(<bang>0)
-command! -bang BOutline call fzf_settings#vim#buffer_outline(<bang>0)
+command! -bang Mru          call fzf_settings#vim#mru(<bang>0)
+command! -bang MruCwd       call fzf_settings#vim#mru_in_cwd(<bang>0)
+command! -bang MruInCwd     call fzf_settings#vim#mru_in_cwd(<bang>0)
+command! -bang BOutline     call fzf_settings#vim#buffer_outline(<bang>0)
+command! -bang Quickfix     call fzf_settings#vim#quickfix(<bang>0)
+command! -bang LocationList call fzf_settings#vim#location_list(<bang>0)
 
 function! s:fzf_bufopen(e) abort
     let list = split(a:e)
@@ -286,58 +288,6 @@ function! s:fzf_messages(bang) abort
 endfunction
 
 command! -bang Messages call <SID>fzf_messages(<bang>0)
-
-function! s:fzf_open_quickfix_item(e) abort
-    let line = a:e
-    let filename = fnameescape(split(line, ':\d\+:')[0])
-    let linenr = matchstr(line, ':\d\+:')[1:-2]
-    let colum = matchstr(line, '\(:\d\+\)\@<=:\d\+:')[1:-2]
-    execute 'e ' . filename
-    call cursor(linenr, colum)
-endfunction
-
-function! s:fzf_quickfix_to_grep(v) abort
-    return bufname(a:v.bufnr) . ':' . a:v.lnum . ':' . a:v.col . ':' . a:v.text
-endfunction
-
-function! s:fzf_get_quickfix() abort
-    return map(getqflist(), 's:fzf_quickfix_to_grep(v:val)')
-endfunction
-
-function! s:fzf_quickfix(bang) abort
-    let s:source = 'quickfix'
-    let items = s:fzf_get_quickfix()
-    if len(items) == 0
-        call s:warn('No quickfix items!')
-        return
-    endif
-    call s:run(s:wrap(s:source, {
-                \ 'source': items,
-                \ 'sink':   function('s:fzf_open_quickfix_item'),
-                \ 'options': '--layout=reverse-list --prompt "Quickfix> "'
-                \ }, a:bang))
-endfunction
-
-function! s:fzf_get_location_list() abort
-    return map(getloclist(0), 's:fzf_quickfix_to_grep(v:val)')
-endfunction
-
-function! s:fzf_location_list(bang) abort
-    let s:source = 'location_list'
-    let items = s:fzf_get_location_list()
-    if len(items) == 0
-        call s:warn('No location list items!')
-        return
-    endif
-    call s:run(s:wrap(s:source, {
-                \ 'source': items,
-                \ 'sink':   function('s:fzf_open_quickfix_item'),
-                \ 'options': '--layout=reverse-list --prompt "LocationList> "'
-                \ }, a:bang))
-endfunction
-
-command! -bang Quickfix call s:fzf_quickfix(<bang>0)
-command! -bang LocationList call s:fzf_location_list(<bang>0)
 
 function! s:fzf_yank_register(line) abort
     call setreg('"', getreg(a:line[7]))
