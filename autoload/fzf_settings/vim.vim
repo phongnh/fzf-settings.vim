@@ -102,28 +102,26 @@ function! s:vim_recent_files_in_cwd() abort
     return filter(s:vim_recent_files(), 'fnamemodify(v:val, ":p") =~ l:pattern')
 endfunction
 
-function! fzf_settings#vim#mru(bang) abort
-    let l:preview_options = fzf#vim#with_preview(
+function! s:mru_preview_options() abort
+    return fzf#vim#with_preview(
                 \ {
-                \   'source': s:vim_recent_files(),
                 \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
                 \ },
                 \ 'right:60%',
                 \ g:fzf_preview_key
                 \ )
-    call s:run(s:wrap('mru', l:preview_options, a:bang))
+endfunction
+
+function! fzf_settings#vim#mru(bang) abort
+    let opts = s:wrap('mru', s:mru_preview_options(), a:bang)
+    let opts['source'] = s:vim_recent_files()
+    call s:run(opts)
 endfunction
 
 function! fzf_settings#vim#mru_in_cwd(bang) abort
-    let l:preview_options = fzf#vim#with_preview(
-                \ {
-                \   'source': s:vim_recent_files_in_cwd(),
-                \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
-                \ },
-                \ 'right:60%',
-                \ g:fzf_preview_key
-                \ )
-    call s:run(s:wrap('mru-in-cwd', l:preview_options, a:bang))
+    let opts = s:wrap('mru', s:mru_preview_options(), a:bang)
+    let opts['source'] = s:vim_recent_files_in_cwd()
+    call s:run(opts)
 endfunction
 
 " ------------------------------------------------------------------
