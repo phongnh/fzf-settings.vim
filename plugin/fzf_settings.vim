@@ -1,5 +1,5 @@
-if globpath(&rtp, 'plugin/fzf.vim') == ''
-    echohl WarningMsg | echomsg 'fzf.vim is not found.' | echohl none
+if globpath(&rtp, 'plugin/fzf.vim') == '' && globpath(&rtp, 'plugin/skim.vim') == ''
+    echohl WarningMsg | echomsg 'fzf.vim or skim.vim is not found.' | echohl none
     finish
 endif
 
@@ -16,14 +16,17 @@ endif
 
 if s:has_popup
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
+    let g:skim_layout = g:fzf_layout
 else
     if has('nvim') || has('gui_running')
         let $FZF_DEFAULT_OPTS .= ' --inline-info'
+        let $SKIM_DEFAULT_OPTIONS .= ' --inline-info'
     endif
 
     if !has('nvim')
         " Make all FZF commands to use fullscreen layout in VIM
         let g:fzf_layout = {}
+        let g:skim_layout = {}
     endif
 endif
 
@@ -56,6 +59,22 @@ else
 endif
 
 command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') fzf_settings#find_project_dir(expand('%:p:h'))
+
+function! s:wrap(...) abort
+    if exists('*skim#wrap')
+        return call('skim#wrap', a:000)
+    else
+        return call('fzf#wrap', a:000)
+    endif
+endfunction
+
+function! s:run(...) abort
+    if exists('*skim#run')
+        return call('skim#run', a:000)
+    else
+        return call('fzf#run', a:000)
+    endif
+endfunction
 
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
@@ -235,7 +254,7 @@ endfunction
 
 function! s:fzf_mru(bang)
     let s:source = 'mru'
-    call fzf#run(fzf#wrap(
+    call s:run(s:wrap(
                 \ s:source,
                 \ fzf#vim#with_preview({
                 \   'source': s:fzf_vim_recent_files(),
@@ -254,7 +273,7 @@ endfunction
 
 function! s:fzf_mru_cwd(bang) abort
     let s:source = 'mru-cwd'
-    call fzf#run(fzf#wrap(
+    call s:run(s:wrap(
                 \ s:source,
                 \ fzf#vim#with_preview({
                 \   'source': s:fzf_vim_recent_files_in_cwd(),
@@ -297,7 +316,7 @@ endfunction
 
 function! s:fzf_jumps(bang) abort
     let s:source = 'jumps'
-    call fzf#run(fzf#wrap('jumps', {
+    call s:run(s:wrap('jumps', {
                 \ 'source':  s:fzf_jumplist(),
                 \ 'sink':    function('s:fzf_bufopen'),
                 \ 'options': '+m --prompt "Jumps> "',
@@ -319,7 +338,7 @@ endfunction
 
 function! s:fzf_messages(bang) abort
     let s:source = 'messages'
-    call fzf#run(fzf#wrap(s:source, {
+    call s:run(s:wrap(s:source, {
                 \ 'source':  s:fzf_messages_source(),
                 \ 'sink':    function('s:fzf_yank_sink'),
                 \ 'options': '+m --prompt "Messages> "',
@@ -352,7 +371,7 @@ function! s:fzf_quickfix(bang) abort
         call s:warn('No quickfix items!')
         return
     endif
-    call fzf#run(fzf#wrap(s:source, {
+    call s:run(s:wrap(s:source, {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
                 \ 'options': '--layout=reverse-list --prompt "Quickfix> "'
@@ -370,7 +389,7 @@ function! s:fzf_location_list(bang) abort
         call s:warn('No location list items!')
         return
     endif
-    call fzf#run(fzf#wrap(s:source, {
+    call s:run(s:wrap(s:source, {
                 \ 'source': items,
                 \ 'sink':   function('s:fzf_open_quickfix_item'),
                 \ 'options': '--layout=reverse-list --prompt "LocationList> "'
@@ -398,7 +417,7 @@ function! s:fzf_registers(bang) abort
         call s:warn('No register items!')
         return
     endif
-    call fzf#run(fzf#wrap(s:source, {
+    call s:run(s:wrap(s:source, {
                 \ 'source':  items,
                 \ 'sink':    function('s:fzf_yank_register'),
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
@@ -461,7 +480,7 @@ function! s:fzf_outline(bang) abort
                     \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, expand('%:S')),
                     \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, expand('%:S'))
                     \ ]
-        call fzf#run(fzf#wrap(s:source, {
+        call s:run(s:wrap(s:source, {
                     \ 'source':  s:fzf_outline_source(tag_cmds),
                     \ 'sink*':   function('s:fzf_outline_sink'),
                     \ 'options': '--layout=reverse-list -m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
