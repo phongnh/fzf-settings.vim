@@ -223,6 +223,7 @@ endfunction
 command! -bang Mru      call fzf_settings#vim#mru(<bang>0)
 command! -bang MruCwd   call fzf_settings#vim#mru_in_cwd(<bang>0)
 command! -bang MruInCwd call fzf_settings#vim#mru_in_cwd(<bang>0)
+command! -bang BOutline call fzf_settings#vim#buffer_outline(<bang>0)
 
 function! s:fzf_bufopen(e) abort
     let list = split(a:e)
@@ -364,71 +365,5 @@ function! s:fzf_registers(bang) abort
 endfunction
 
 command! -bang Registers call s:fzf_registers(<bang>0)
-
-if exists('*trim')
-    function! s:strip(str) abort
-        return trim(a:str)
-    endfunction
-else
-    function! s:strip(str) abort
-        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-    endfunction
-endif
-
-function! s:fzf_outline_format(lists) abort
-    for list in a:lists
-        let linenr = list[2][:len(list[2])-3]
-        let line = s:strip(getline(linenr))
-        let list[0] = substitute(line, list[0], printf("\x1b[34m%s\x1b[m", list[0]), '')
-        call map(list, "printf('%s', v:val)")
-    endfor
-    return a:lists
-endfunction
-
-function! s:fzf_outline_source(tag_cmds) abort
-    if !filereadable(expand('%'))
-        throw 'Save the file first'
-    endif
-    let lines = []
-    for cmd in a:tag_cmds
-        let lines = split(system(cmd), "\n")
-        if !v:shell_error && len(lines)
-            break
-        endif
-    endfor
-    if v:shell_error
-        throw get(lines, 0, 'Failed to extract tags')
-    elseif empty(lines)
-        throw 'No tags found'
-    endif
-    return map(s:fzf_outline_format(map(lines, 'split(v:val, "\t")')), 'join(v:val, "\t")')
-endfunction
-
-function! s:fzf_outline_sink(lines) abort
-    if !empty(a:lines)
-        let line = a:lines[0]
-        execute split(line, "\t")[2]
-    endif
-endfunction
-
-function! s:fzf_outline(bang) abort
-    try
-        let s:source = 'outline'
-        let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
-        let tag_cmds = [
-                    \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, expand('%:S')),
-                    \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, expand('%:S'))
-                    \ ]
-        call s:run(s:wrap(s:source, {
-                    \ 'source':  s:fzf_outline_source(tag_cmds),
-                    \ 'sink*':   function('s:fzf_outline_sink'),
-                    \ 'options': '--layout=reverse-list -m -d "\t" --with-nth 1 -n 1 --ansi --prompt "Outline> "'
-                    \ }, a:bang))
-    catch
-        call s:warn(v:exception)
-    endtry
-endfunction
-
-command! -bang BOutline call s:fzf_outline(<bang>0)
 
 let g:loaded_fzf_settings_vim = 1

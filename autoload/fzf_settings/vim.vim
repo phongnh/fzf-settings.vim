@@ -1,3 +1,9 @@
+function! s:action_for(key, ...)
+    let default = a:0 ? a:1 : ''
+    let cmd = get(g:fzf_action, a:key, default)
+    return type(cmd) == type('') ? cmd : default
+endfunction
+
 function! s:run(...) abort
     if exists('*skim#run')
         return call('skim#run', a:000)
@@ -13,6 +19,24 @@ function! s:wrap(...) abort
         return call('fzf#wrap', a:000)
     endif
 endfunction
+
+function! s:shellescape(arg, ...) abort
+    if exists('*skim#shellescape')
+        return call('skim#shellescape', [a:arg] + a:000)
+    else
+        return call('fzf#shellescape', [a:arg] + a:000)
+    endif
+endfunction
+
+if exists('*trim')
+    function! s:trim(str) abort
+        return trim(a:str)
+    endfunction
+else
+    function! s:trim(str) abort
+        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
+    endfunction
+endif
 
 function! s:warn(message) abort
     echohl WarningMsg
@@ -100,4 +124,80 @@ function! fzf_settings#vim#mru_in_cwd(bang) abort
                 \ g:fzf_preview_key
                 \ )
     call s:run(s:wrap('mru-in-cwd', l:preview_options, a:bang))
+endfunction
+
+" ------------------------------------------------------------------
+" BOutline
+" ------------------------------------------------------------------
+function! s:boutline_format(lists) abort
+    for list in a:lists
+        let linenr = list[2][:len(list[2])-3]
+        let line = s:trim(getline(linenr))
+        let list[0] = substitute(line, list[0], printf("\x1b[34m%s\x1b[m", list[0]), '')
+        call map(list, "printf('%s', v:val)")
+    endfor
+    return a:lists
+endfunction
+
+function! s:boutline_source(tag_cmds) abort
+    if !filereadable(expand('%'))
+        throw 'Save the file first'
+    endif
+
+    let lines = []
+    for cmd in a:tag_cmds
+        let lines = split(system(cmd), "\n")
+        if !v:shell_error && len(lines)
+            break
+        endif
+    endfor
+    if v:shell_error
+        throw get(lines, 0, 'Failed to extract tags')
+    elseif empty(lines)
+        throw 'No tags found'
+    endif
+    return map(s:boutline_format(map(lines, 'split(v:val, "\t")')), 'join(v:val, "\t")')
+endfunction
+
+function! s:boutline_sink(lines) abort
+    call s:warn(string(a:lines))
+    if len(a:lines) < 2
+       return
+    endif
+    normal! m'
+    let cmd = s:action_for(a:lines[0])
+    if !empty(cmd)
+        execute 'silent' cmd '%'
+    endif
+    execute split(a:lines[1], "\t")[2]
+    normal! zvzz
+endfunction
+
+function! fzf_settings#vim#buffer_outline(bang) abort
+    let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
+    let filename = s:shellescape(expand('%'))
+    let tag_cmds = [
+                \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, filename),
+                \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, filename),
+                \ ]
+    try
+        let opts = s:wrap(
+                    \ 'boutline',
+                    \ fzf#vim#with_preview(
+                    \   {
+                    \     'placeholder': '{2}:{3..}',
+                    \     'options': ['--layout=reverse-list', '--ansi', '-m', '-d', '\t', '--with-nth=1', '-n', '1', '--prompt', 'Outline> ', '--preview-window', '+{3}-/2'],
+                    \   },
+                    \   'right:60%:hidden',
+                    \   g:fzf_preview_key
+                    \ ),
+                    \ a:bang)
+        call extend(opts, {
+                    \ 'source': s:boutline_source(tag_cmds),
+                    \ 'sink*': function('s:boutline_sink'),
+                    \ })
+        call s:run(opts)
+    catch
+        call s:warn(v:exception)
+    endtry
 endfunction
