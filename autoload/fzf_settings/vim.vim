@@ -304,3 +304,25 @@ function! fzf_settings#vim#registers(bang) abort
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
                 \ }, a:bang))
 endfunction
+
+" ------------------------------------------------------------------
+" Messages
+" ------------------------------------------------------------------
+function! s:messages_sink(e) abort
+    let @" = a:e
+    echohl ModeMsg
+    echo 'Yanked!'
+    echohl None
+endfunction
+
+function! s:messages_source() abort
+    return split(call('execute', ['messages']), '\n')
+endfunction
+
+function! fzf_settings#vim#messages(bang) abort
+    call s:run(s:wrap('messages', {
+                \ 'source':  s:messages_source(),
+                \ 'sink':    function('s:messages_sink'),
+                \ 'options': '+m --prompt "Messages> "',
+                \ }, a:bang))
+endfunction

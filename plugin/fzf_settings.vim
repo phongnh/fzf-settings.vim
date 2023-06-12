@@ -227,6 +227,7 @@ command! -bang BOutline     call fzf_settings#vim#buffer_outline(<bang>0)
 command! -bang Quickfix     call fzf_settings#vim#quickfix(<bang>0)
 command! -bang LocationList call fzf_settings#vim#location_list(<bang>0)
 command! -bang Registers    call fzf_settings#vim#registers(<bang>0)
+command! -bang Messages     call fzf_settings#vim#messages(<bang>0)
 
 function! s:fzf_bufopen(e) abort
     let list = split(a:e)
@@ -267,27 +268,5 @@ function! s:fzf_jumps(bang) abort
 endfunction
 
 command! -bang Jumps call <SID>fzf_jumps(<bang>0)
-
-function! s:fzf_yank_sink(e) abort
-    let @" = a:e
-    echohl ModeMsg
-    echo 'Yanked!'
-    echohl None
-endfunction
-
-function! s:fzf_messages_source() abort
-    return split(call('execute', ['messages']), '\n')
-endfunction
-
-function! s:fzf_messages(bang) abort
-    let s:source = 'messages'
-    call s:run(s:wrap(s:source, {
-                \ 'source':  s:fzf_messages_source(),
-                \ 'sink':    function('s:fzf_yank_sink'),
-                \ 'options': '+m --prompt "Messages> "',
-                \ }, a:bang))
-endfunction
-
-command! -bang Messages call <SID>fzf_messages(<bang>0)
 
 let g:loaded_fzf_settings_vim = 1
