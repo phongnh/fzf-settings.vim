@@ -226,6 +226,7 @@ command! -bang MruInCwd     call fzf_settings#vim#mru_in_cwd(<bang>0)
 command! -bang BOutline     call fzf_settings#vim#buffer_outline(<bang>0)
 command! -bang Quickfix     call fzf_settings#vim#quickfix(<bang>0)
 command! -bang LocationList call fzf_settings#vim#location_list(<bang>0)
+command! -bang Registers    call fzf_settings#vim#registers(<bang>0)
 
 function! s:fzf_bufopen(e) abort
     let list = split(a:e)
@@ -288,32 +289,5 @@ function! s:fzf_messages(bang) abort
 endfunction
 
 command! -bang Messages call <SID>fzf_messages(<bang>0)
-
-function! s:fzf_yank_register(line) abort
-    call setreg('"', getreg(a:line[7]))
-    echohl ModeMsg
-    echo 'Yanked!'
-    echohl None
-endfunction
-
-function! s:fzf_get_registers() abort
-    return split(call('execute', ['registers']), '\n')[1:]
-endfunction
-
-function! s:fzf_registers(bang) abort
-    let s:source = 'registers'
-    let items = s:fzf_get_registers()
-    if len(items) == 0
-        call s:warn('No register items!')
-        return
-    endif
-    call s:run(s:wrap(s:source, {
-                \ 'source':  items,
-                \ 'sink':    function('s:fzf_yank_register'),
-                \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
-                \ }, a:bang))
-endfunction
-
-command! -bang Registers call s:fzf_registers(<bang>0)
 
 let g:loaded_fzf_settings_vim = 1
