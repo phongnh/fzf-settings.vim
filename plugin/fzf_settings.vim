@@ -40,6 +40,7 @@ let g:fzf_action = {
             \ 'ctrl-t': 'tabedit',
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
+let g:skim_action = g:fzf_action
 
 function! s:is_universal_ctags(ctags_path) abort
     try
@@ -212,14 +213,6 @@ if executable('rg')
 endif
 
 " Extra commands
-
-function! s:warn(message) abort
-    echohl WarningMsg
-    echomsg a:message
-    echohl None
-    return 0
-endfunction
-
 command! -bang Mru          call fzf_settings#vim#mru(<bang>0)
 command! -bang MruCwd       call fzf_settings#vim#mru_in_cwd(<bang>0)
 command! -bang MruInCwd     call fzf_settings#vim#mru_in_cwd(<bang>0)
@@ -229,44 +222,8 @@ command! -bang LocationList call fzf_settings#vim#location_list(<bang>0)
 command! -bang Registers    call fzf_settings#vim#registers(<bang>0)
 command! -bang Messages     call fzf_settings#vim#messages(<bang>0)
 
-function! s:fzf_bufopen(e) abort
-    let list = split(a:e)
-    if len(list) < 4
-        return
-    endif
-
-    let [linenr, col, file_text] = [list[1], list[2]+1, join(list[3:])]
-    let lines = getbufline(file_text, linenr)
-    let path = file_text
-    if empty(lines)
-        if stridx(join(split(getline(linenr))), file_text) == 0
-            let lines = [file_text]
-            let path = bufname('%')
-        elseif filereadable(path)
-            let lines = ['buffer unloaded']
-        else
-            " Skip.
-            return
-        endif
-    endif
-
-    execute 'e '  . path
-    call cursor(linenr, col)
-endfunction
-
-function! s:fzf_jumplist() abort
-    return split(call('execute', ['jumps']), '\n')[1:]
-endfunction
-
-function! s:fzf_jumps(bang) abort
-    let s:source = 'jumps'
-    call s:run(s:wrap('jumps', {
-                \ 'source':  s:fzf_jumplist(),
-                \ 'sink':    function('s:fzf_bufopen'),
-                \ 'options': '+m --prompt "Jumps> "',
-                \ }, a:bang))
-endfunction
-
-command! -bang Jumps call <SID>fzf_jumps(<bang>0)
+if !exists(':Jumps')
+    command! -bang Jumps call fzf_settings#vim#jumps(<bang>0)
+endif
 
 let g:loaded_fzf_settings_vim = 1
