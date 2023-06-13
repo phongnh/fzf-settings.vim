@@ -61,22 +61,6 @@ endif
 
 command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') fzf_settings#find_project_dir(expand('%:p:h'))
 
-function! s:wrap(...) abort
-    if exists('*skim#wrap')
-        return call('skim#wrap', a:000)
-    else
-        return call('fzf#wrap', a:000)
-    endif
-endfunction
-
-function! s:run(...) abort
-    if exists('*skim#run')
-        return call('skim#run', a:000)
-    else
-        return call('fzf#run', a:000)
-    endif
-endfunction
-
 function! s:fzf_file_preview_options(bang) abort
     return fzf#vim#with_preview('right:60%:hidden', s:fzf_preview_key)
 endfunction
