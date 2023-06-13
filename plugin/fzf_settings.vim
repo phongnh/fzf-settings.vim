@@ -34,6 +34,10 @@ endif
 
 let g:fzf_preview_key    = get(g:, 'fzf_preview_key', 'ctrl-/')
 let g:fzf_preview_window = ['right:50%:hidden', g:fzf_preview_key]
+if exists('*skim#run')
+    let g:fzf_preview_window = 'right:50%:hidden'
+    let $SKIM_DEFAULT_OPTIONS .= printf(' --bind %s:toggle-preview', g:fzf_preview_key)
+endif
 
 let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
