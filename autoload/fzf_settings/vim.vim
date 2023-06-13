@@ -76,11 +76,11 @@ endfunction
 " RRG
 " ------------------------------------------------------------------
 function! fzf_settings#vim#rg(query, bang) abort
-    return call('fzf#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:grep_preview_options(a:bang), a:bang])
+    return call('fzf_settings#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 function! fzf_settings#vim#frg(query, bang) abort
-    return call('fzf#vim#grep', [g:fzf_grep_command . ' -F ' . a:query, s:grep_preview_options(a:bang), a:bang])
+    return call('fzf_settings#vim#grep', [g:fzf_grep_command . ' -F ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 function! fzf_settings#vim#rg2(query, bang) abort
@@ -89,6 +89,20 @@ endfunction
 
 function! fzf_settings#vim#frg2(query, bang) abort
     return call('fzf#vim#grep2', [g:fzf_grep_command . ' -F ', a:query, s:grep_preview_options(a:bang), a:bang])
+endfunction
+
+function! fzf_settings#vim#grep(cmd, ...) abort
+    if exists('*skim#run')
+        try
+            let skim_default_command = $SKIM_DEFAULT_COMMAND
+            let $SKIM_DEFAULT_COMMAND = a:cmd
+            return call('fzf#vim#grep', extend([a:cmd, 0], a:000))
+        finally
+            let $SKIM_DEFAULT_COMMAND = skim_default_command
+        endtry
+    else
+        return call('fzf#vim#grep', extend([a:cmd], a:000))
+    endif
 endfunction
 
 " ------------------------------------------------------------------
