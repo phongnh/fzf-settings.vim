@@ -18,7 +18,7 @@ let g:fzf_action = {
 let g:skim_action = g:fzf_action
 
 " Check if Popup/Floating Win is available for FZF or not
-if (has('nvim') && exists('*nvim_win_set_config') && has('nvim-0.4.2')) ||
+if (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2')) ||
             \ (exists('*popup_create') && has('patch-8.2.191'))
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
 else
