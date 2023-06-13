@@ -194,23 +194,10 @@ else
                 \ call fzf#vim#files(<q-args>, s:fzf_file_preview_options(<bang>0), <bang>0)
 endif
 
-if executable('rg')
-    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
-    if g:fzf_follow_links
-        let s:fzf_grep_command .= ' --follow'
-    endif
-    if get(g:, 'fzf_grep_ignore_vcs', 0)
-        let s:fzf_grep_command .= ' --no-ignore-vcs'
-    endif
-
-    " Rg command with preview window
-    command! -bang -nargs=* Rg
-                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-    command! -bang -nargs=* FRg
-                \ call fzf#vim#grep(s:fzf_grep_command . ' -F ' . shellescape(<q-args>), 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-    command! -bang -nargs=* RRg
-                \ call fzf#vim#grep(s:fzf_grep_command . ' ' . <q-args>, 1, s:fzf_grep_preview_options(<bang>0), <bang>0)
-endif
+" Rg command with preview window
+command! -bang -nargs=* Rg  call fzf_settings#vim#rg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* FRg call fzf_settings#vim#frg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* RRg call fzf_settings#vim#rg(<q-args>, <bang>0)
 
 " Extra commands
 command! -bang Mru          call fzf_settings#vim#mru(<bang>0)

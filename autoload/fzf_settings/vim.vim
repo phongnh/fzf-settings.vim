@@ -58,6 +58,30 @@ function! fzf_settings#vim#files(dir, bang) abort
 endfunction
 
 " ------------------------------------------------------------------
+" Rg
+" FRg
+" RRg
+" ------------------------------------------------------------------
+function! s:build_ripgrep_command() abort
+    if exists('s:fzf_grep_command')
+        return s:fzf_grep_command
+    endif
+    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
+    let s:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
+    let s:fzf_grep_command .= get(g:, 'fzf_grep_ignore_vcs', 0) ? ' --no-ignore-vcs' : ''
+endfunction
+
+function! fzf_settings#vim#rg(args, bang) abort
+    call s:build_ripgrep_command()
+    return call('fzf#vim#grep', [s:fzf_grep_command . ' ' . a:args, s:grep_preview_options(a:bang), a:bang])
+endfunction
+
+function! fzf_settings#vim#frg(args, bang) abort
+    call s:build_ripgrep_command()
+    return call('fzf#vim#grep', [s:fzf_grep_command . ' -F ' . a:args, s:grep_preview_options(a:bang), a:bang])
+endfunction
+
+" ------------------------------------------------------------------
 " Mru
 " MruInCwd
 " ------------------------------------------------------------------
