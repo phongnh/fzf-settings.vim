@@ -61,6 +61,9 @@ endfunction
 " Rg
 " FRg
 " RRg
+" RG
+" FRG
+" RRG
 " ------------------------------------------------------------------
 function! s:build_ripgrep_command() abort
     if exists('s:fzf_grep_command')
@@ -79,6 +82,16 @@ endfunction
 function! fzf_settings#vim#frg(args, bang) abort
     call s:build_ripgrep_command()
     return call('fzf#vim#grep', [s:fzf_grep_command . ' -F ' . a:args, s:grep_preview_options(a:bang), a:bang])
+endfunction
+
+function! fzf_settings#vim#rg2(args, bang) abort
+    call s:build_ripgrep_command()
+    return call('fzf#vim#grep2', [s:fzf_grep_command, a:args, s:grep_preview_options(a:bang), a:bang])
+endfunction
+
+function! fzf_settings#vim#frg2(args, bang) abort
+    call s:build_ripgrep_command()
+    return call('fzf#vim#grep2', [s:fzf_grep_command . ' -F ', a:args, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 " ------------------------------------------------------------------

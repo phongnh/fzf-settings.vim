@@ -182,6 +182,9 @@ endif
 command! -bang -nargs=* Rg  call fzf_settings#vim#rg(shellescape(<q-args>), <bang>0)
 command! -bang -nargs=* FRg call fzf_settings#vim#frg(shellescape(<q-args>), <bang>0)
 command! -bang -nargs=* RRg call fzf_settings#vim#rg(<q-args>, <bang>0)
+command! -bang -nargs=* RG  call fzf_settings#vim#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* FRG call fzf_settings#vim#frg2(<q-args>, <bang>0)
+command! -bang -nargs=* RRG call fzf_settings#vim#rg2(<q-args>, <bang>0)
 
 " Extra commands
 command! -bang Mru          call fzf_settings#vim#mru(<bang>0)
