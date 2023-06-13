@@ -1,4 +1,4 @@
-function! s:action_for(key, ...)
+function! s:action_for(key, ...) abort
     let default = a:0 ? a:1 : ''
     let cmd = get(g:fzf_action, a:key, default)
     return type(cmd) == type('') ? cmd : default
@@ -377,7 +377,7 @@ endfunction
 " ------------------------------------------------------------------
 " Jumps
 " ------------------------------------------------------------------
-function! s:jumps_delta_sink(lines)
+function! s:jumps_delta_sink(lines) abort
     call s:warn(a:lines)
     if len(a:lines) < 2
         return
@@ -401,7 +401,7 @@ function! s:jumps_delta_sink(lines)
     endif
 endfunction
 
-function! s:jumps_sink(lines)
+function! s:jumps_sink(lines) abort
     if len(a:lines) < 2
         return
     endif
