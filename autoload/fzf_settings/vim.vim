@@ -75,33 +75,20 @@ endfunction
 " FRG
 " RRG
 " ------------------------------------------------------------------
-function! s:build_ripgrep_command() abort
-    if exists('s:fzf_grep_command')
-        return s:fzf_grep_command
-    endif
-    let s:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
-    let s:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    let s:fzf_grep_command .= get(g:, 'fzf_grep_ignore_vcs', 0) ? ' --no-ignore-vcs' : ''
+function! fzf_settings#vim#rg(query, bang) abort
+    return call('fzf#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
-function! fzf_settings#vim#rg(args, bang) abort
-    call s:build_ripgrep_command()
-    return call('fzf#vim#grep', [s:fzf_grep_command . ' ' . a:args, s:grep_preview_options(a:bang), a:bang])
+function! fzf_settings#vim#frg(query, bang) abort
+    return call('fzf#vim#grep', [g:fzf_grep_command . ' -F ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
-function! fzf_settings#vim#frg(args, bang) abort
-    call s:build_ripgrep_command()
-    return call('fzf#vim#grep', [s:fzf_grep_command . ' -F ' . a:args, s:grep_preview_options(a:bang), a:bang])
+function! fzf_settings#vim#rg2(query, bang) abort
+    return call('fzf#vim#grep2', [g:fzf_grep_command, a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
-function! fzf_settings#vim#rg2(args, bang) abort
-    call s:build_ripgrep_command()
-    return call('fzf#vim#grep2', [s:fzf_grep_command, a:args, s:grep_preview_options(a:bang), a:bang])
-endfunction
-
-function! fzf_settings#vim#frg2(args, bang) abort
-    call s:build_ripgrep_command()
-    return call('fzf#vim#grep2', [s:fzf_grep_command . ' -F ', a:args, s:grep_preview_options(a:bang), a:bang])
+function! fzf_settings#vim#frg2(query, bang) abort
+    return call('fzf#vim#grep2', [g:fzf_grep_command . ' -F ', a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 " ------------------------------------------------------------------

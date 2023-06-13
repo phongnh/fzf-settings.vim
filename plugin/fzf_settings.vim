@@ -96,7 +96,21 @@ command! -bang -nargs=? -complete=dir AFiles call fzf_settings#vim#afiles(<q-arg
 
 command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') fzf_settings#find_project_dir(expand('%:p:h'))
 
-" Toggle fzf follow links for Files
+" Rg command with preview window
+function! s:build_grep_command() abort
+    let g:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
+    let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
+    let g:fzf_grep_command .= get(g:, 'fzf_grep_ignore_vcs', 0) ? ' --no-ignore-vcs' : ''
+endfunction
+
+command! -bang -nargs=* Rg  call fzf_settings#vim#rg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* FRg call fzf_settings#vim#frg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* RRg call fzf_settings#vim#rg(<q-args>, <bang>0)
+command! -bang -nargs=* RG  call fzf_settings#vim#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* FRG call fzf_settings#vim#frg2(<q-args>, <bang>0)
+command! -bang -nargs=* RRG call fzf_settings#vim#rg2(<q-args>, <bang>0)
+
+" Toggle fzf follow links for Files and Rg
 function! s:toggle_fzf_follow_links() abort
     if g:fzf_follow_links == 0
         let g:fzf_follow_links = 1
@@ -106,17 +120,10 @@ function! s:toggle_fzf_follow_links() abort
         echo 'FZF does not follow symlinks!'
     endif
     call s:build_files_command()
+    call s:build_grep_command()
 endfunction
 
 command! ToggleFzfFollowLinks call <SID>toggle_fzf_follow_links()
-
-" Rg command with preview window
-command! -bang -nargs=* Rg  call fzf_settings#vim#rg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* FRg call fzf_settings#vim#frg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* RRg call fzf_settings#vim#rg(<q-args>, <bang>0)
-command! -bang -nargs=* RG  call fzf_settings#vim#rg2(<q-args>, <bang>0)
-command! -bang -nargs=* FRG call fzf_settings#vim#frg2(<q-args>, <bang>0)
-command! -bang -nargs=* RRG call fzf_settings#vim#rg2(<q-args>, <bang>0)
 
 " Extra commands
 command! -bang Mru          call fzf_settings#vim#mru(<bang>0)
@@ -135,6 +142,7 @@ endif
 function! s:setup_fzf_settings() abort
     call s:build_files_command()
     call s:build_afiles_command()
+    call s:build_grep_command()
 endfunction
 
 augroup FzfSettings
