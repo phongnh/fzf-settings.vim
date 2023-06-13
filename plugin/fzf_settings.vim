@@ -98,7 +98,9 @@ command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') fzf_settings#find_p
 
 " Rg command with preview window
 function! s:build_grep_command() abort
+    let g:fzf_grep_has_column = exists('*skim#run')
     let g:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
+    let g:fzf_grep_command .= g:fzf_grep_has_column ? ' --column' : ''
     let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
     let g:fzf_grep_command .= get(g:, 'fzf_grep_ignore_vcs', 0) ? ' --no-ignore-vcs' : ''
 endfunction
