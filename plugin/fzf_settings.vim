@@ -24,7 +24,7 @@ if (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2')) ||
 else
     let g:fzf_layout = {}
 endif
-let g:skim_layout = g:fzf_layout
+let g:skim_layout = get(g:, 'skim_layout', g:fzf_layout)
 
 let g:fzf_inline_info = get(g:, 'fzf_inline_info', has('nvim') || has('gui_running'))
 if g:fzf_inline_info
