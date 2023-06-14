@@ -152,6 +152,7 @@ function! s:setup_fzf_settings() abort
 endfunction
 
 augroup FzfSettings
+    autocmd!
     autocmd VimEnter * call <SID>setup_fzf_settings()
 augroup END
 
