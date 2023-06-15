@@ -36,7 +36,12 @@ function! fzf_settings#find_project_dir(starting_dir) abort
         else
             let l:root_dir = finddir(l:root_marker, a:starting_dir . ';')
         endif
-        let l:root_dir = substitute(l:root_dir, l:root_marker . '$', '', '')
+
+        if l:root_dir == l:root_marker
+            let l:root_dir = '.'
+        else
+            let l:root_dir = substitute(l:root_dir, l:root_marker . '$', '', '')
+        endif
 
         if strlen(l:root_dir)
             let l:root_dir = fnamemodify(l:root_dir, ':p:h')
@@ -54,5 +59,5 @@ function! fzf_settings#find_project_dir(starting_dir) abort
         endif
     endif
 
-    return fnamemodify(l:root_dir, ':p:~')
+    return fnamemodify(l:root_dir, ':p:h:~')
 endfunction
