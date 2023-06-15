@@ -98,8 +98,6 @@ endfunction
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#vim#files(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir AFiles call fzf_settings#vim#afiles(<q-args>, <bang>0)
 
-command! -bang PFiles execute (<bang>0 ? 'Files!' : 'Files') fzf_settings#find_project_dir(expand('%:p:h'))
-
 " Rg command with preview window
 function! s:build_grep_command() abort
     let g:fzf_grep_has_column = exists('*skim#run')
