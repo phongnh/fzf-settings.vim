@@ -216,7 +216,6 @@ function! s:boutline_source(tag_cmds) abort
 endfunction
 
 function! s:boutline_sink(lines) abort
-    call s:warn(string(a:lines))
     if len(a:lines) < 2
        return
     endif
@@ -389,7 +388,6 @@ endfunction
 " Jumps
 " ------------------------------------------------------------------
 function! s:jumps_delta_sink(lines) abort
-    call s:warn(a:lines)
     if len(a:lines) < 2
         return
     endif
@@ -403,8 +401,6 @@ function! s:jumps_delta_sink(lines) abort
     endif
     let current = match(s:jump_items, '\v^\s*\>')
     let delta = idx - current
-    echomsg string(s:jump_items)
-    echomsg printf('idx: %d, current: %d, delta: %d', idx, current, delta)
     if delta < 0
         execute 'normal! ' . (-delta) . "\<C-O>"
     else
