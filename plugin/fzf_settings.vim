@@ -32,7 +32,7 @@ if g:fzf_inline_info
     let $SKIM_DEFAULT_OPTIONS .= ' --inline-info'
 endif
 
-let g:fzf_preview_key    = get(g:, 'fzf_preview_key', 'ctrl-/')
+let g:fzf_preview_key    = get(g:, 'fzf_preview_key', ';')
 let g:fzf_preview_window = ['right:50%:hidden', g:fzf_preview_key]
 if exists('*skim#run')
     let g:fzf_preview_window = 'right:50%:hidden'
@@ -62,8 +62,8 @@ endif
 " Build commands for Files and AFiles
 function! s:build_files_command() abort
     let files_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore-vcs --hidden --strip-cwd-prefix',
-                \ 'rg': 'rg --files --color never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
+                \ 'fd': 'fd --type file --color=never --no-ignore-vcs --hidden',
+                \ 'rg': 'rg --files --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
                 \ }
 
     if g:fzf_follow_links
@@ -81,8 +81,8 @@ endfunction
 
 function! s:build_afiles_command() abort
     let afiles_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore --hidden --follow --strip-cwd-prefix',
-                \ 'rg': 'rg --files --color never --no-ignore --hidden --follow',
+                \ 'fd': 'fd --type file --color=never --no-ignore --hidden --follow',
+                \ 'rg': 'rg --files --color=never --no-ignore --hidden --follow',
                 \ }
 
     if g:fzf_find_tool ==# 'rg'
