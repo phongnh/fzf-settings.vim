@@ -45,12 +45,22 @@ function! s:warn(message) abort
     return 0
 endfunction
 
+function! s:show_right_preview() abort
+    return &columns >= 120
+endfunction
+
 function! s:file_preview_options(bang) abort
+    if s:show_right_preview()
+        return fzf#vim#with_preview('up:60%:hidden', g:fzf_preview_key)
+    endif
     return fzf#vim#with_preview('right:60%:hidden', g:fzf_preview_key)
 endfunction
 
 function! s:grep_preview_options(bang) abort
-    return a:bang ? fzf#vim#with_preview('up:60%', g:fzf_preview_key) : fzf#vim#with_preview('right:50%:hidden', g:fzf_preview_key)
+    if a:bang || !s:show_right_preview()
+        return fzf#vim#with_preview('up:60%', g:fzf_preview_key)
+    endif
+    return fzf#vim#with_preview('right:50%:hidden', g:fzf_preview_key)
 endfunction
 
 " ------------------------------------------------------------------
