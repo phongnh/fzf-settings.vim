@@ -59,9 +59,9 @@ command! -bang -nargs=* RRG call fzf_settings#vim#rg2(<q-args>, <bang>0)
 command! ToggleFzfFollowLinks call fzf_settings#ToggleFollowLinks()
 
 " Extra commands
-command! -bang Mru          call fzf_settings#vim#mru(<bang>0)
-command! -bang MruCwd       call fzf_settings#vim#mru_in_cwd(<bang>0)
-command! -bang MruInCwd     call fzf_settings#vim#mru_in_cwd(<bang>0)
+command! -bang Mru          call fzf_settings#mru#run(<bang>0)
+command! -bang MruCwd       call fzf_settings#mru#run_in_cwd(<bang>0)
+command! -bang MruInCwd     call fzf_settings#mru#run_in_cwd(<bang>0)
 command! -bang BOutline     call fzf_settings#vim#buffer_outline(<bang>0)
 command! -bang Quickfix     call fzf_settings#vim#quickfix(<bang>0)
 command! -bang LocationList call fzf_settings#vim#location_list(<bang>0)

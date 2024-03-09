@@ -15,6 +15,10 @@ function! fzf_settings#warn(message) abort
     return 0
 endfunction
 
+function! fzf_settings#ShowRightPreview() abort
+    return &columns >= 120
+endfunction
+
 function! fzf_settings#action_for(key, ...) abort
     let default = a:0 ? a:1 : ''
     let cmd = get(g:fzf_action, a:key, default)
