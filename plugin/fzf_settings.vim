@@ -68,6 +68,5 @@ command! -bang BOutline     call fzf_settings#boutline#run(<bang>0)
 command! -bang Quickfix     call fzf_settings#quickfix#run(<bang>0)
 command! -bang LocationList call fzf_settings#quickfix#loclist(<bang>0)
 command! -bang Registers    call fzf_settings#registers#run(<bang>0)
-command! -bang Messages     call fzf_settings#messages#run(<bang>0)
 
 let g:loaded_fzf_settings_vim = 1
