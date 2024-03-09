@@ -1,7 +1,7 @@
 function! s:boutline_format(lists) abort
     for list in a:lists
         let linenr = list[2][:len(list[2])-3]
-        let line = fzf_settings#trim(getline(linenr))
+        let line = fzf_settings#Trim(getline(linenr))
         let list[0] = substitute(line, list[0], printf("\x1b[34m%s\x1b[m", list[0]), '')
         call map(list, "printf('%s', v:val)")
     endfor
@@ -66,6 +66,6 @@ function! fzf_settings#boutline#run(...) abort
                     \ })
         call fzf#run(opts)
     catch
-        call fzf_settings#warn(v:exception)
+        call fzf_settings#Warn(v:exception)
     endtry
 endfunction

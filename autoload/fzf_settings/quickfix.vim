@@ -23,7 +23,7 @@ endfunction
 function! fzf_settings#quickfix#run(...) abort
     let items = s:quickfix_source()
     if empty(items)
-        call fzf_settings#warn('No quickfix items!')
+        call fzf_settings#Warn('No quickfix items!')
         return
     endif
     let opts = fzf#wrap(
@@ -51,7 +51,7 @@ endfunction
 function! fzf_settings#quickfix#loclist(...) abort
     let items = s:location_list_source()
     if empty(items)
-        call fzf_settings#warn('No location list items!')
+        call fzf_settings#Warn('No location list items!')
         return
     endif
     let opts = fzf#wrap(

@@ -1,14 +1,14 @@
-function! fzf_settings#trim(str) abort
+function! fzf_settings#Trim(str) abort
     return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
 endfunction
 
-if exists('*trim')
-    function! fzf_settings#trim(str) abort
-        return trim(a:str)
+if exists('*Trim')
+    function! fzf_settings#Trim(str) abort
+        return Trim(a:str)
     endfunction
 endif
 
-function! fzf_settings#warn(message) abort
+function! fzf_settings#Warn(message) abort
     echohl WarningMsg
     echomsg a:message
     echohl None

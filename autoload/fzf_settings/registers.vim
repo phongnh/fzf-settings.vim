@@ -12,7 +12,7 @@ endfunction
 function! fzf_settings#registers#run(...) abort
     let items = s:registers_source()
     if empty(items)
-        call fzf_settings#warn('No register items!')
+        call fzf_settings#Warn('No register items!')
         return
     endif
     call fzf#run(fzf#wrap('registers', {
