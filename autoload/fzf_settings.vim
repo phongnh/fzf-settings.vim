@@ -15,6 +15,12 @@ function! fzf_settings#warn(message) abort
     return 0
 endfunction
 
+function! fzf_settings#action_for(key, ...) abort
+    let default = a:0 ? a:1 : ''
+    let cmd = get(g:fzf_action, a:key, default)
+    return type(cmd) == v:t_string ? cmd : default
+endfunction
+
 " Toggle fzf follow links for Files and Rg
 function! fzf_settings#ToggleFollowLinks() abort
     if g:fzf_follow_links == 0

@@ -69,7 +69,7 @@ command! -bang Registers    call fzf_settings#vim#registers(<bang>0)
 command! -bang Messages     call fzf_settings#vim#messages(<bang>0)
 
 if !exists(':Jumps')
-    command! -bang Jumps call fzf_settings#vim#jumps(<bang>0)
+    command! -bang Jumps call fzf_settings#jumps#run(<bang>0)
 endif
 
 let g:loaded_fzf_settings_vim = 1
