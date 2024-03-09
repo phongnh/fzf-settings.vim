@@ -33,7 +33,7 @@ function! s:boutline_sink(lines) abort
         return
     endif
     normal! m'
-    let cmd = s:action_for(a:lines[0])
+    let cmd = fzf_settings#action_for(a:lines[0])
     if !empty(cmd)
         execute 'silent' cmd '%'
     endif
