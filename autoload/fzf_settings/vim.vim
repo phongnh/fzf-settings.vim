@@ -45,43 +45,19 @@ endfunction
 " RRG
 " ------------------------------------------------------------------
 function! fzf_settings#vim#rg(query, bang) abort
-    return call('fzf_settings#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:grep_preview_options(a:bang), a:bang])
+    return call('fzf#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 function! fzf_settings#vim#frg(query, bang) abort
-    return call('fzf_settings#vim#grep', [g:fzf_grep_command . ' -F ' . a:query, s:grep_preview_options(a:bang), a:bang])
+    return call('fzf#vim#grep', [g:fzf_grep_command . ' -F ' . a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 function! fzf_settings#vim#rg2(query, bang) abort
-    return call('fzf_settings#vim#grep2', [g:fzf_grep_command, a:query, s:grep_preview_options(a:bang), a:bang])
+    return call('fzf#vim#grep2', [g:fzf_grep_command, a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 function! fzf_settings#vim#frg2(query, bang) abort
-    return call('fzf_settings#vim#grep2', [g:fzf_grep_command . ' -F ', a:query, s:grep_preview_options(a:bang), a:bang])
-endfunction
-
-function! fzf_settings#vim#grep(cmd, ...) abort
-    if exists('*skim#run')
-        try
-            let skim_default_command = $SKIM_DEFAULT_COMMAND
-            let $SKIM_DEFAULT_COMMAND = a:cmd
-            return call('fzf#vim#grep', extend([a:cmd, g:fzf_grep_has_column], a:000))
-        finally
-            let $SKIM_DEFAULT_COMMAND = skim_default_command
-        endtry
-    else
-        return call('fzf#vim#grep', extend([a:cmd], a:000))
-    endif
-endfunction
-
-function! fzf_settings#vim#grep2(cmd, query, ...) abort
-    if exists('*skim#run')
-        let dir = '.'
-        let cmd = a:cmd . ' ' . a:query . ' "{}" ' . dir
-        return call('fzf#vim#grep_interactive', extend([cmd, g:fzf_grep_has_column], a:000))
-    else
-        return call('fzf#vim#grep2', extend([a:cmd, a:query], a:000))
-    endif
+    return call('fzf#vim#grep2', [g:fzf_grep_command . ' -F ', a:query, s:grep_preview_options(a:bang), a:bang])
 endfunction
 
 " ------------------------------------------------------------------
@@ -140,15 +116,15 @@ function! s:mru_preview_options() abort
 endfunction
 
 function! fzf_settings#vim#mru(bang) abort
-    let opts = fzf_settings#wrap('mru', s:mru_preview_options(), a:bang)
+    let opts = fzf#wrap('mru', s:mru_preview_options(), a:bang)
     let opts['source'] = s:vim_recent_files()
-    call fzf_settings#run(opts)
+    call fzf#run(opts)
 endfunction
 
 function! fzf_settings#vim#mru_in_cwd(bang) abort
-    let opts = fzf_settings#wrap('mru', s:mru_preview_options(), a:bang)
+    let opts = fzf#wrap('mru', s:mru_preview_options(), a:bang)
     let opts['source'] = s:vim_recent_files_in_cwd()
-    call fzf_settings#run(opts)
+    call fzf#run(opts)
 endfunction
 
 " ------------------------------------------------------------------
@@ -199,13 +175,13 @@ endfunction
 
 function! fzf_settings#vim#buffer_outline(bang) abort
     let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
-    let filename = fzf_settings#shellescape(expand('%'))
+    let filename = fzf#shellescape(expand('%'))
     let tag_cmds = [
                 \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags_bin, filetype, filename),
                 \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags_bin, filename),
                 \ ]
     try
-        let opts = fzf_settings#wrap(
+        let opts = fzf#wrap(
                     \ 'boutline',
                     \ fzf#vim#with_preview(
                     \   {
@@ -220,7 +196,7 @@ function! fzf_settings#vim#buffer_outline(bang) abort
                     \ 'source': s:boutline_source(tag_cmds),
                     \ 'sink*': function('s:boutline_sink'),
                     \ })
-        call fzf_settings#run(opts)
+        call fzf#run(opts)
     catch
         call fzf_settings#warn(v:exception)
     endtry
@@ -258,7 +234,7 @@ function! fzf_settings#vim#quickfix(bang) abort
         call fzf_settings#warn('No quickfix items!')
         return
     endif
-    let opts = fzf_settings#wrap(
+    let opts = fzf#wrap(
                 \ 'quickfix',
                 \ fzf#vim#with_preview(
                 \   {
@@ -273,7 +249,7 @@ function! fzf_settings#vim#quickfix(bang) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
-    call fzf_settings#run(opts)
+    call fzf#run(opts)
 endfunction
 
 function! s:location_list_source() abort
@@ -286,7 +262,7 @@ function! fzf_settings#vim#location_list(bang) abort
         call fzf_settings#warn('No location list items!')
         return
     endif
-    let opts = fzf_settings#wrap(
+    let opts = fzf#wrap(
                 \ 'location-list',
                 \ fzf#vim#with_preview(
                 \   {
@@ -301,7 +277,7 @@ function! fzf_settings#vim#location_list(bang) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
-    call fzf_settings#run(opts)
+    call fzf#run(opts)
 endfunction
 
 " ------------------------------------------------------------------
@@ -324,7 +300,7 @@ function! fzf_settings#vim#registers(bang) abort
         call fzf_settings#warn('No register items!')
         return
     endif
-    call fzf_settings#run(fzf_settings#wrap('registers', {
+    call fzf#run(fzf#wrap('registers', {
                 \ 'source':  items,
                 \ 'sink':    function('s:registers_sink'),
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
@@ -346,7 +322,7 @@ function! s:messages_source() abort
 endfunction
 
 function! fzf_settings#vim#messages(bang) abort
-    call fzf_settings#run(fzf_settings#wrap('messages', {
+    call fzf#run(fzf#wrap('messages', {
                 \ 'source':  s:messages_source(),
                 \ 'sink':    function('s:messages_sink'),
                 \ 'options': '+m --prompt "Messages> "',
@@ -437,7 +413,7 @@ function! fzf_settings#vim#jumps(bang) abort
     endif
 
     let current = -match(s:jump_items, '\v^\s*\>')
-    let opts = fzf_settings#wrap(
+    let opts = fzf#wrap(
                 \ 'jumps',
                 \ {
                 \   'source': extend(s:jump_items[0:0], map(s:jump_items[1:], 'v:val')),
@@ -445,5 +421,5 @@ function! fzf_settings#vim#jumps(bang) abort
                 \ },
                 \ a:bang)
     let opts['sink*'] = function('s:jumps_sink')
-    call fzf_settings#run(opts)
+    call fzf#run(opts)
 endfunction

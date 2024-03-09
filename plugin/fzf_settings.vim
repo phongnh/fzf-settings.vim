@@ -1,5 +1,5 @@
-if globpath(&rtp, 'plugin/fzf.vim') == '' && globpath(&rtp, 'plugin/skim.vim') == ''
-    echohl WarningMsg | echomsg 'fzf.vim or skim.vim is not found.' | echohl none
+if empty(globpath(&rtp, 'plugin/fzf.vim'))
+    echohl WarningMsg | echomsg 'fzf.vim is not found.' | echohl none
     finish
 endif
 
@@ -15,7 +15,6 @@ let g:fzf_action = {
             \ 'ctrl-t': 'tabedit',
             \ 'ctrl-o': has('mac') ? '!open' : '!xdg-open',
             \ }
-let g:skim_action = g:fzf_action
 
 " Check if Popup/Floating Win is available for FZF or not
 if (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2')) ||
@@ -24,20 +23,13 @@ if (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2')) ||
 else
     let g:fzf_layout = {}
 endif
-let g:skim_layout = get(g:, 'skim_layout', g:fzf_layout)
 
-let g:fzf_inline_info = get(g:, 'fzf_inline_info', has('nvim') || has('gui_running'))
-if g:fzf_inline_info
+if get(g:, 'fzf_inline_info', has('nvim') || has('gui_running'))
     let $FZF_DEFAULT_OPTS .= ' --inline-info'
-    let $SKIM_DEFAULT_OPTIONS .= ' --inline-info'
 endif
 
 let g:fzf_preview_key    = get(g:, 'fzf_preview_key', ';')
 let g:fzf_preview_window = ['right:50%:hidden', g:fzf_preview_key]
-if exists('*skim#run')
-    let g:fzf_preview_window = 'right:50%:hidden'
-    let $SKIM_DEFAULT_OPTIONS .= printf(' --bind %s:toggle-preview', g:fzf_preview_key)
-endif
 
 let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
@@ -51,7 +43,6 @@ else
     let g:fzf_tags_command = printf('%s -R', g:fzf_ctags_bin)
 endif
 
-call fzf_settings#Init()
 call fzf_settings#command#Init()
 
 " Files command with preview window

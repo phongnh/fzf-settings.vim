@@ -15,38 +15,6 @@ function! fzf_settings#warn(message) abort
     return 0
 endfunction
 
-function! fzf_settings#run(...) abort
-    return call('fzf#run', a:000)
-endfunction
-
-function! fzf_settings#run(...) abort
-    return call('fzf#run', a:000)
-endfunction
-
-function! fzf_settings#wrap(...) abort
-    return call('fzf#wrap', a:000)
-endfunction
-
-function! fzf_settings#shellescape(arg, ...) abort
-    return call('fzf#shellescape', [a:arg] + a:000)
-endfunction
-
-function! fzf_settings#Init() abort
-    if exists('*skim#run')
-        function! fzf_settings#run(...) abort
-            return call('skim#run', a:000)
-        endfunction
-
-        function! fzf_settings#wrap(...) abort
-            return call('skim#wrap', a:000)
-        endfunction
-
-        function! fzf_settings#shellescape(arg, ...) abort
-            return call('skim#shellescape', [a:arg] + a:000)
-        endfunction
-    endif
-endfunction
-
 " Toggle fzf follow links for Files and Rg
 function! fzf_settings#ToggleFollowLinks() abort
     if g:fzf_follow_links == 0
