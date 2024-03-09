@@ -4,47 +4,6 @@ function! s:action_for(key, ...) abort
     return type(cmd) == type('') ? cmd : default
 endfunction
 
-function! s:run(...) abort
-    if exists('*skim#run')
-        return call('skim#run', a:000)
-    else
-        return call('fzf#run', a:000)
-    endif
-endfunction
-
-function! s:wrap(...) abort
-    if exists('*skim#wrap')
-        return call('skim#wrap', a:000)
-    else
-        return call('fzf#wrap', a:000)
-    endif
-endfunction
-
-function! s:shellescape(arg, ...) abort
-    if exists('*skim#shellescape')
-        return call('skim#shellescape', [a:arg] + a:000)
-    else
-        return call('fzf#shellescape', [a:arg] + a:000)
-    endif
-endfunction
-
-if exists('*trim')
-    function! s:trim(str) abort
-        return trim(a:str)
-    endfunction
-else
-    function! s:trim(str) abort
-        return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
-    endfunction
-endif
-
-function! s:warn(message) abort
-    echohl WarningMsg
-    echomsg a:message
-    echohl None
-    return 0
-endfunction
-
 function! s:show_right_preview() abort
     return &columns >= 120
 endfunction
@@ -181,15 +140,15 @@ function! s:mru_preview_options() abort
 endfunction
 
 function! fzf_settings#vim#mru(bang) abort
-    let opts = s:wrap('mru', s:mru_preview_options(), a:bang)
+    let opts = fzf_settings#wrap('mru', s:mru_preview_options(), a:bang)
     let opts['source'] = s:vim_recent_files()
-    call s:run(opts)
+    call fzf_settings#run(opts)
 endfunction
 
 function! fzf_settings#vim#mru_in_cwd(bang) abort
-    let opts = s:wrap('mru', s:mru_preview_options(), a:bang)
+    let opts = fzf_settings#wrap('mru', s:mru_preview_options(), a:bang)
     let opts['source'] = s:vim_recent_files_in_cwd()
-    call s:run(opts)
+    call fzf_settings#run(opts)
 endfunction
 
 " ------------------------------------------------------------------
@@ -198,7 +157,7 @@ endfunction
 function! s:boutline_format(lists) abort
     for list in a:lists
         let linenr = list[2][:len(list[2])-3]
-        let line = s:trim(getline(linenr))
+        let line = fzf_settings#trim(getline(linenr))
         let list[0] = substitute(line, list[0], printf("\x1b[34m%s\x1b[m", list[0]), '')
         call map(list, "printf('%s', v:val)")
     endfor
@@ -240,13 +199,13 @@ endfunction
 
 function! fzf_settings#vim#buffer_outline(bang) abort
     let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
-    let filename = s:shellescape(expand('%'))
+    let filename = fzf_settings#shellescape(expand('%'))
     let tag_cmds = [
                 \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, filename),
                 \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, filename),
                 \ ]
     try
-        let opts = s:wrap(
+        let opts = fzf_settings#wrap(
                     \ 'boutline',
                     \ fzf#vim#with_preview(
                     \   {
@@ -261,9 +220,9 @@ function! fzf_settings#vim#buffer_outline(bang) abort
                     \ 'source': s:boutline_source(tag_cmds),
                     \ 'sink*': function('s:boutline_sink'),
                     \ })
-        call s:run(opts)
+        call fzf_settings#run(opts)
     catch
-        call s:warn(v:exception)
+        call fzf_settings#warn(v:exception)
     endtry
 endfunction
 
@@ -296,10 +255,10 @@ endfunction
 function! fzf_settings#vim#quickfix(bang) abort
     let items = s:quickfix_source()
     if empty(items)
-        call s:warn('No quickfix items!')
+        call fzf_settings#warn('No quickfix items!')
         return
     endif
-    let opts = s:wrap(
+    let opts = fzf_settings#wrap(
                 \ 'quickfix',
                 \ fzf#vim#with_preview(
                 \   {
@@ -314,7 +273,7 @@ function! fzf_settings#vim#quickfix(bang) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
-    call s:run(opts)
+    call fzf_settings#run(opts)
 endfunction
 
 function! s:location_list_source() abort
@@ -324,10 +283,10 @@ endfunction
 function! fzf_settings#vim#location_list(bang) abort
     let items = s:location_list_source()
     if empty(items)
-        call s:warn('No location list items!')
+        call fzf_settings#warn('No location list items!')
         return
     endif
-    let opts = s:wrap(
+    let opts = fzf_settings#wrap(
                 \ 'location-list',
                 \ fzf#vim#with_preview(
                 \   {
@@ -342,7 +301,7 @@ function! fzf_settings#vim#location_list(bang) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
-    call s:run(opts)
+    call fzf_settings#run(opts)
 endfunction
 
 " ------------------------------------------------------------------
@@ -362,10 +321,10 @@ endfunction
 function! fzf_settings#vim#registers(bang) abort
     let items = s:registers_source()
     if empty(items)
-        call s:warn('No register items!')
+        call fzf_settings#warn('No register items!')
         return
     endif
-    call s:run(s:wrap('registers', {
+    call fzf_settings#run(fzf_settings#wrap('registers', {
                 \ 'source':  items,
                 \ 'sink':    function('s:registers_sink'),
                 \ 'options': '--layout=reverse-list +m --prompt "Registers> "',
@@ -387,7 +346,7 @@ function! s:messages_source() abort
 endfunction
 
 function! fzf_settings#vim#messages(bang) abort
-    call s:run(s:wrap('messages', {
+    call fzf_settings#run(fzf_settings#wrap('messages', {
                 \ 'source':  s:messages_source(),
                 \ 'sink':    function('s:messages_sink'),
                 \ 'options': '+m --prompt "Messages> "',
@@ -473,12 +432,12 @@ endfunction
 function! fzf_settings#vim#jumps(bang) abort
     let s:jump_items = s:jumps_source()
     if len(s:jump_items) < 2
-        call s:warn('No jump items!')
+        call fzf_settings#warn('No jump items!')
         return
     endif
 
     let current = -match(s:jump_items, '\v^\s*\>')
-    let opts = s:wrap(
+    let opts = fzf_settings#wrap(
                 \ 'jumps',
                 \ {
                 \   'source': extend(s:jump_items[0:0], map(s:jump_items[1:], 'v:val')),
@@ -486,5 +445,5 @@ function! fzf_settings#vim#jumps(bang) abort
                 \ },
                 \ a:bang)
     let opts['sink*'] = function('s:jumps_sink')
-    call s:run(opts)
+    call fzf_settings#run(opts)
 endfunction
