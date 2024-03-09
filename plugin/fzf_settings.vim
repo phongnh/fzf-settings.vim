@@ -49,12 +49,12 @@ call fzf_settings#command#Init()
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#vim#files(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir AFiles call fzf_settings#vim#afiles(<q-args>, <bang>0)
 
-command! -bang -nargs=* Rg  call fzf_settings#vim#rg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* FRg call fzf_settings#vim#frg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* RRg call fzf_settings#vim#rg(<q-args>, <bang>0)
-command! -bang -nargs=* RG  call fzf_settings#vim#rg2(<q-args>, <bang>0)
-command! -bang -nargs=* FRG call fzf_settings#vim#frg2(<q-args>, <bang>0)
-command! -bang -nargs=* RRG call fzf_settings#vim#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* Rg  call fzf_settings#grep#rg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* FRg call fzf_settings#grep#frg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* RRg call fzf_settings#grep#rg(<q-args>, <bang>0)
+command! -bang -nargs=* RG  call fzf_settings#grep#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* FRG call fzf_settings#grep#frg2(<q-args>, <bang>0)
+command! -bang -nargs=* RRG call fzf_settings#grep#rg2(<q-args>, <bang>0)
 
 command! ToggleFzfFollowLinks call fzf_settings#ToggleFollowLinks()
 
