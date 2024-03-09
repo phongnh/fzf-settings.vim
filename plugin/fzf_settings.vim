@@ -46,8 +46,8 @@ endif
 call fzf_settings#command#Init()
 
 " Files command with preview window
-command! -bang -nargs=? -complete=dir Files  call fzf_settings#vim#files(<q-args>, <bang>0)
-command! -bang -nargs=? -complete=dir AFiles call fzf_settings#vim#afiles(<q-args>, <bang>0)
+command! -bang -nargs=? -complete=dir Files  call fzf_settings#files#run(<q-args>, <bang>0)
+command! -bang -nargs=? -complete=dir AFiles call fzf_settings#files#all(<q-args>, <bang>0)
 
 command! -bang -nargs=* Rg  call fzf_settings#grep#rg(shellescape(<q-args>), <bang>0)
 command! -bang -nargs=* FRg call fzf_settings#grep#frg(shellescape(<q-args>), <bang>0)
