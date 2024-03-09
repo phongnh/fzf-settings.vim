@@ -201,8 +201,8 @@ function! fzf_settings#vim#buffer_outline(bang) abort
     let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
     let filename = fzf_settings#shellescape(expand('%'))
     let tag_cmds = [
-                \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags, filetype, filename),
-                \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags, filename),
+                \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags_bin, filetype, filename),
+                \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags_bin, filename),
                 \ ]
     try
         let opts = fzf_settings#wrap(

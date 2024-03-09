@@ -42,21 +42,13 @@ endif
 let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
 
-let g:fzf_ctags        = get(g:, 'fzf_ctags', 'ctags')
-let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.ctagsignore'))
+let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
+let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.config/ctags/ignore'))
 
-function! s:is_universal_ctags(ctags_path) abort
-    try
-        return system(printf('%s --version', a:ctags_path)) =~# 'Universal Ctags'
-    catch
-        return 0
-    endtry
-endfunction
-
-if get(g:, 'fzf_universal_ctags', s:is_universal_ctags(g:fzf_ctags)) && filereadable(g:fzf_ctags_ignore)
-    let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags, g:fzf_ctags_ignore)
+if get(g:, 'fzf_universal_ctags', fzf_settings#IsUniversalCtags(g:fzf_ctags_bin)) && filereadable(g:fzf_ctags_ignore)
+    let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags_bin, g:fzf_ctags_ignore)
 else
-    let g:fzf_tags_command = printf('%s -R', g:fzf_ctags)
+    let g:fzf_tags_command = printf('%s -R', g:fzf_ctags_bin)
 endif
 
 call fzf_settings#Init()

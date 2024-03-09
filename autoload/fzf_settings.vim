@@ -59,3 +59,7 @@ function! fzf_settings#ToggleFollowLinks() abort
     call fzf_settings#command#BuildFilesCommand()
     call fzf_settings#command#BuildGrepCommand()
 endfunction
+
+function! fzf_settings#IsUniversalCtags(ctags_bin) abort
+    return system(a:ctags_bin . ' --version') =~# 'Universal Ctags'
+endfunction
