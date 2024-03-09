@@ -1,7 +1,7 @@
 function! fzf_settings#command#BuildFilesCommand() abort
     let files_commands = {
-                \ 'fd': 'fd --type file --color=never --no-ignore-vcs --hidden',
-                \ 'rg': 'rg --files --color=never --no-ignore-vcs --ignore-dot --ignore-parent --hidden',
+                \ 'fd': 'fd --type file --color=never --hidden',
+                \ 'rg': 'rg --files --color=never --ignore-dot --ignore-parent --hidden',
                 \ }
 
     if g:fzf_follow_links
@@ -19,8 +19,8 @@ endfunction
 
 function! fzf_settings#command#BuildAFilesCommand() abort
     let afiles_commands = {
-                \ 'fd': 'fd --type file --color=never --no-ignore --hidden --follow',
-                \ 'rg': 'rg --files --color=never --no-ignore --hidden --follow',
+                \ 'fd': 'fd --type file --color=never --no-ignore --exclude .git --hidden --follow',
+                \ 'rg': 'rg --files --color=never --no-ignore --exclude .git --hidden --follow',
                 \ }
 
     if g:fzf_find_tool ==# 'rg'
