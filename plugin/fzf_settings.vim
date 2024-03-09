@@ -28,20 +28,22 @@ if get(g:, 'fzf_inline_info', has('nvim') || has('gui_running'))
     let $FZF_DEFAULT_OPTS .= ' --inline-info'
 endif
 
-let g:fzf_preview_key    = get(g:, 'fzf_preview_key', ';')
-let g:fzf_preview_window = ['right:50%:hidden', g:fzf_preview_key]
+let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
-let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
-let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
+let g:fzf_vim = {}
+let g:fzf_vim.preview_window = ['hidden,right,50%,<70(up:50%)', g:fzf_preview_key]
 
 let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
 let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.config/ctags/ignore'))
 
 if get(g:, 'fzf_universal_ctags', fzf_settings#IsUniversalCtags(g:fzf_ctags_bin)) && filereadable(g:fzf_ctags_ignore)
-    let g:fzf_tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags_bin, g:fzf_ctags_ignore)
+    let g:fzf_vim.tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags_bin, g:fzf_ctags_ignore)
 else
-    let g:fzf_tags_command = printf('%s -R', g:fzf_ctags_bin)
+    let g:fzf_vim.tags_command = printf('%s -R', g:fzf_ctags_bin)
 endif
+
+let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
+let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
 
 call fzf_settings#command#Init()
 
