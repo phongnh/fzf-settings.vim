@@ -8,10 +8,10 @@ function! fzf_settings#command#BuildFilesCommand() abort
         call map(files_commands, 'v:val . " --follow"')
     endif
 
-    if g:fzf_find_tool ==# 'rg'
-        let g:fzf_files_command = files_commands['rg'] . ' || ' . files_commands['fd']
+    if g:fzf_find_tool ==# 'rg' && executable('rg')
+        let g:fzf_files_command = files_commands['rg']
     else
-        let g:fzf_files_command = files_commands['fd'] . ' || ' . files_commands['rg']
+        let g:fzf_files_command = files_commands['fd']
     endif
 
     return g:fzf_files_command
@@ -23,10 +23,10 @@ function! fzf_settings#command#BuildAFilesCommand() abort
                 \ 'rg': 'rg --files --color=never --no-ignore --exclude .git --hidden --follow',
                 \ }
 
-    if g:fzf_find_tool ==# 'rg'
-        let g:fzf_afiles_command = afiles_commands['rg'] . ' || ' . afiles_commands['fd']
+    if g:fzf_find_tool ==# 'rg' && executable('rg')
+        let g:fzf_afiles_command = afiles_commands['rg']
     else
-        let g:fzf_afiles_command = afiles_commands['fd'] . ' || ' . afiles_commands['rg']
+        let g:fzf_afiles_command = afiles_commands['fd']
     endif
 
     return g:fzf_afiles_command
