@@ -42,8 +42,10 @@ else
     let g:fzf_vim.tags_command = printf('%s -R', g:fzf_ctags_bin)
 endif
 
-let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
-let g:fzf_follow_links = get(g:, 'fzf_follow_links', 0)
+let g:fzf_find_tool       = get(g:, 'fzf_find_tool', 'fd')
+let g:fzf_find_ignore_vcs = get(g:, 'fzf_find_ignore_vcs', 1)
+let g:fzf_follow_links    = get(g:, 'fzf_follow_links', 0)
+let g:fzf_grep_ignore_vcs = get(g:, 'fzf_grep_ignore_vcs', 0) 
 
 call fzf_settings#command#Init()
 

@@ -1,12 +1,8 @@
-function! fzf_settings#command#BuildFilesCommand() abort
+function! s:BuildFilesCommand() abort
     let files_commands = {
-                \ 'fd': 'fd --type file --color=never --hidden',
-                \ 'rg': 'rg --files --color=never --ignore-dot --ignore-parent --hidden',
+                \ 'fd': 'fd --type file --color never --hidden',
+                \ 'rg': 'rg --files --color never --ignore-dot --ignore-parent --hidden',
                 \ }
-
-    if g:fzf_follow_links
-        call map(files_commands, 'v:val . " --follow"')
-    endif
 
     if g:fzf_find_tool ==# 'rg' && executable('rg')
         let g:fzf_files_command = files_commands['rg']
@@ -14,13 +10,16 @@ function! fzf_settings#command#BuildFilesCommand() abort
         let g:fzf_files_command = files_commands['fd']
     endif
 
+    let g:fzf_files_command .= (g:fzf_follow_links ? ' --follow' : '')
+    let g:fzf_files_command .= (g:fzf_find_ignore_vcs ? ' --ignore-vcs' : ' --no-ignore-vcs')
+
     return g:fzf_files_command
 endfunction
 
-function! fzf_settings#command#BuildAFilesCommand() abort
+function! s:BuildAFilesCommand() abort
     let afiles_commands = {
-                \ 'fd': 'fd --type file --color=never --no-ignore --exclude .git --hidden --follow',
-                \ 'rg': 'rg --files --color=never --no-ignore --exclude .git --hidden --follow',
+                \ 'fd': 'fd --type file --color never --no-ignore --exclude .git --hidden --follow',
+                \ 'rg': 'rg --files --color never --no-ignore --exclude .git --hidden --follow',
                 \ }
 
     if g:fzf_find_tool ==# 'rg' && executable('rg')
@@ -33,14 +32,14 @@ function! fzf_settings#command#BuildAFilesCommand() abort
 endfunction
 
 " Rg command with preview window
-function! fzf_settings#command#BuildGrepCommand() abort
-    let g:fzf_grep_command = 'rg --color=always -H --no-heading --line-number --smart-case --hidden'
+function! s:BuildGrepCommand() abort
+    let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
     let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    let g:fzf_grep_command .= get(g:, 'fzf_grep_ignore_vcs', 0) ? ' --no-ignore-vcs' : ''
+    let g:fzf_grep_command .= g:fzf_grep_ignore_vcs ? ' --no-ignore-vcs' : ''
 endfunction
 
 function! fzf_settings#command#Init() abort
-    call fzf_settings#command#BuildFilesCommand()
-    call fzf_settings#command#BuildAFilesCommand()
-    call fzf_settings#command#BuildGrepCommand()
+    call s:BuildFilesCommand()
+    call s:BuildAFilesCommand()
+    call s:BuildGrepCommand()
 endfunction

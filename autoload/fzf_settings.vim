@@ -38,8 +38,7 @@ function! fzf_settings#ToggleFollowLinks() abort
         let g:fzf_follow_links = 0
         echo 'FZF does not follow symlinks!'
     endif
-    call fzf_settings#command#BuildFilesCommand()
-    call fzf_settings#command#BuildGrepCommand()
+    call fzf_settings#command#Init()
 endfunction
 
 function! fzf_settings#IsUniversalCtags(ctags_bin) abort
