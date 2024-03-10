@@ -29,16 +29,19 @@ function! s:boutline_source(tag_cmds) abort
 endfunction
 
 function! s:boutline_sink(lines) abort
+    " ['ctrl-m', 'function! Source(vimrc) abort^I/Users/phong.nguyen/projects/phongnh/dotfiles/zero/vim/core/helpers.vim^I17;"^If']
     if len(a:lines) < 2
         return
     endif
-    normal! m'
     let cmd = fzf_settings#action_for(a:lines[0])
-    if !empty(cmd)
-        execute 'silent' cmd '%'
+    if stridx('edit', cmd) != 0
+        normal! m'
+        silent! call fzf_settings#execute_silent(cmd)
     endif
-    execute split(a:lines[1], "\t")[2]
+    " 17;"
+    call fzf_settings#execute_silent(split(a:lines[1], "\t")[2])
     normal! zvzz
+    " call fzf_settings#execute_silent('normal! zvzz')
 endfunction
 
 function! fzf_settings#boutline#run(...) abort
