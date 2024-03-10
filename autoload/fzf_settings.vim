@@ -2,9 +2,9 @@ function! fzf_settings#Trim(str) abort
     return substitute(a:str, '^\s*\(.\{-}\)\s*$', '\1', '')
 endfunction
 
-if exists('*Trim')
+if exists('*trim')
     function! fzf_settings#Trim(str) abort
-        return Trim(a:str)
+        return trim(a:str)
     endfunction
 endif
 
