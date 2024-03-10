@@ -11,7 +11,7 @@ function! s:BuildFilesCommand() abort
     endif
 
     let g:fzf_files_command .= (g:fzf_follow_links ? ' --follow' : '')
-    let g:fzf_files_command .= (g:fzf_find_ignore_vcs ? ' --ignore-vcs' : ' --no-ignore-vcs')
+    let g:fzf_files_command .= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
 
     return g:fzf_files_command
 endfunction
@@ -35,7 +35,7 @@ endfunction
 function! s:BuildGrepCommand() abort
     let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
     let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    let g:fzf_grep_command .= g:fzf_grep_ignore_vcs ? '' : ' --no-ignore-vcs'
+    let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
 endfunction
 
 function! fzf_settings#command#Init() abort
