@@ -1,12 +1,15 @@
 function! s:quickfix_sink(lines) abort
+    " ['ctrl-m', 'zero/vim/core/helpers.vim:17:0:function! Source(vimrc) abort']
     if len(a:lines) < 2
         return
     endif
     let cmd = fzf_settings#action_for(a:lines[0])
     let cmd = empty(cmd) ? 'edit' : cmd
     let [filename, linenr, column] = split(a:lines[1], ':')[0:2]
-    normal! m'
-    execute 'silent' cmd filename
+    if stridx('edit', cmd) != 0 || fnamemodify(filename, ':p') !=# expand('%:p')
+        normal! m'
+        silent! call fzf_settings#execute_silent(cmd . ' ' .   fnameescape(filename))
+    endif
     call cursor(linenr, column)
     normal! zvzz
 endfunction
