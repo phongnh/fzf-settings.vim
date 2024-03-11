@@ -78,6 +78,13 @@ command! -bang -nargs=* RgRaw call fzf_settings#grep#rg_raw(<q-args>, <bang>0)
 command! -bang -nargs=* RG    call fzf_settings#grep#rg2(<q-args>, <bang>0)
 command! -bang -nargs=* FRG   call fzf_settings#grep#frg2(<q-args>, <bang>0)
 
+command! -bang -nargs=* Ug  call fzf_settings#grep#ug(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* FUg call fzf_settings#grep#fug(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* RUg call fzf_settings#grep#ug(<q-args>, <bang>0)
+command! -bang -nargs=* UG  call fzf_settings#grep#ug2(<q-args>, <bang>0)
+command! -bang -nargs=* FUG call fzf_settings#grep#fug2(<q-args>, <bang>0)
+command! -bang -nargs=* RUG call fzf_settings#grep#ug2(<q-args>, <bang>0)
+
 " Extra commands
 command! -bang          Mru          call fzf_settings#mru#run(<bang>0)
 command! -bang          MruCwd       call fzf_settings#mru#run_in_cwd(<bang>0)

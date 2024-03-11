@@ -20,6 +20,8 @@ endfunction
 function! s:BuildGrepCommand() abort
     let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
     let g:fzf_grep_command ..= g:fzf_follow_links ? ' --follow' : ''
+    let g:fzf_ug_command = 'ug --color=always -H --no-heading --line-number --smart-case --hidden'
+    let g:fzf_ug_command ..= g:fzf_follow_links ? ' -R' : ''
 endfunction
 
 function! fzf_settings#command#init() abort
