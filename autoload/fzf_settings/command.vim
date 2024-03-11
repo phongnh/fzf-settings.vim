@@ -36,6 +36,10 @@ function! s:BuildGrepCommand() abort
     let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
     let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
     let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
+
+    let g:fzf_ug_command = 'ug --color=always -H --no-heading --line-number --smart-case --hidden'
+    let g:fzf_ug_command .= g:fzf_follow_links ? ' -R' : ''
+    let g:fzf_ug_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-files' : ' --ignore-files --ignore-files=.ignore'
 endfunction
 
 function! fzf_settings#command#Init() abort
