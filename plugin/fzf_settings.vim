@@ -44,7 +44,7 @@ endif
 
 let g:fzf_find_tool          = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_find_no_ignore_vcs = get(g:, 'fzf_find_no_ignore_vcs', 0)
-let g:fzf_follow_links       = get(g:, 'fzf_follow_links', 0)
+let g:fzf_follow_links       = get(g:, 'fzf_follow_links', 1)
 let g:fzf_grep_no_ignore_vcs = get(g:, 'fzf_grep_no_ignore_vcs', 0)
 
 call fzf_settings#command#Init()
