@@ -47,6 +47,23 @@ let g:fzf_find_no_ignore_vcs = get(g:, 'fzf_find_no_ignore_vcs', 0)
 let g:fzf_follow_links       = get(g:, 'fzf_follow_links', 1)
 let g:fzf_grep_no_ignore_vcs = get(g:, 'fzf_grep_no_ignore_vcs', 0)
 
+let g:fzf_colors = {
+            \ 'fg':         ['fg', 'Normal'],
+            \ 'bg':         ['bg', 'Normal'],
+            \ 'preview-bg': ['bg', 'NormalFloat'],
+            \ 'hl':         ['fg', 'Search'],
+            \ 'fg+':        ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+            \ 'bg+':        ['bg', 'CursorLine', 'CursorColumn'],
+            \ 'hl+':        ['fg', 'Statement'],
+            \ 'info':       ['fg', 'PreProc'],
+            \ 'border':     ['fg', 'Ignore'],
+            \ 'prompt':     ['fg', 'Conditional'],
+            \ 'pointer':    ['fg', 'Exception'],
+            \ 'marker':     ['fg', 'Keyword'],
+            \ 'spinner':    ['fg', 'Label'],
+            \ 'header':     ['fg', 'Comment'],
+            \ }
+
 call fzf_settings#command#Init()
 
 " Files command with preview window
