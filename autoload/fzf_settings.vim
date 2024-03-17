@@ -44,3 +44,14 @@ endfunction
 function! fzf_settings#IsUniversalCtags(ctags_bin) abort
     return system(a:ctags_bin . ' --version') =~# 'Universal Ctags'
 endfunction
+
+function! fzf_settings#BufferTagCommands() abort
+    let language = get({ 'cpp': 'c++' }, &filetype, &filetype)
+    let filename = fzf#shellescape(expand('%'))
+    let null = has('win32') || has('win64') ? 'nul' : '/dev/null'
+    let ctags_options = '-f - --sort=no --excmd=number' . get({ 'ruby': ' --kinds-ruby=-r' }, language, '')
+    return [
+                \ printf('%s %s --language-force=%s %s 2> %s', g:fzf_ctags_bin, ctags_options, language, filename, null),
+                \ printf('%s %s %s 2> %s', g:fzf_ctags_bin, ctags_options, filename, null),
+                \ ]
+endfunction
