@@ -48,7 +48,7 @@ function! fzf_settings#boutline#run(...) abort
     let language = get({ 'cpp': 'c++' }, &filetype, &filetype)
     let filename = fzf#shellescape(expand('%'))
     let null = has('win32') || has('win64') ? 'nul' : '/dev/null'
-    let ctags_options = '-f - --sort=no --excmd=number' . get({ 'ruby': ' --kinds-ruby=-r' }, filetype, '')
+    let ctags_options = '-f - --sort=no --excmd=number' . get({ 'ruby': ' --kinds-ruby=-r' }, language, '')
     let tag_cmds = [
                 \ printf('%s %s --language-force=%s %s 2> %s', g:fzf_ctags_bin, ctags_options, language, filename, null),
                 \ printf('%s %s %s 2> %s', g:fzf_ctags_bin, ctags_options, filename, null),
