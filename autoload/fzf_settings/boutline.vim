@@ -47,9 +47,10 @@ endfunction
 function! fzf_settings#boutline#run(...) abort
     let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
     let filename = fzf#shellescape(expand('%'))
+    let ctags_options = '-f - --sort=no --excmd=number' . get({ 'ruby': ' --kinds-ruby=-r' }, filetype, '')
     let tag_cmds = [
-                \ printf('%s -f - --sort=no --excmd=number --language-force=%s %s 2>/dev/null', g:fzf_ctags_bin, filetype, filename),
-                \ printf('%s -f - --sort=no --excmd=number %s 2>/dev/null', g:fzf_ctags_bin, filename),
+                \ printf('%s %s --language-force=%s %s 2>/dev/null', g:fzf_ctags_bin, ctags_options, filetype, filename),
+                \ printf('%s %s %s 2>/dev/null', g:fzf_ctags_bin, ctags_options, filename),
                 \ ]
     try
         let opts = fzf#wrap(
