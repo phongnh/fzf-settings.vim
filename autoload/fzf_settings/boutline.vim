@@ -45,12 +45,13 @@ function! s:boutline_sink(lines) abort
 endfunction
 
 function! fzf_settings#boutline#run(...) abort
-    let filetype = get({ 'cpp': 'c++' }, &filetype, &filetype)
+    let language = get({ 'cpp': 'c++' }, &filetype, &filetype)
     let filename = fzf#shellescape(expand('%'))
+    let null = has('win32') || has('win64') ? 'nul' : '/dev/null'
     let ctags_options = '-f - --sort=no --excmd=number' . get({ 'ruby': ' --kinds-ruby=-r' }, filetype, '')
     let tag_cmds = [
-                \ printf('%s %s --language-force=%s %s 2>/dev/null', g:fzf_ctags_bin, ctags_options, filetype, filename),
-                \ printf('%s %s %s 2>/dev/null', g:fzf_ctags_bin, ctags_options, filename),
+                \ printf('%s %s --language-force=%s %s 2> %s', g:fzf_ctags_bin, ctags_options, language, filename, null),
+                \ printf('%s %s %s 2> %s', g:fzf_ctags_bin, ctags_options, filename, null),
                 \ ]
     try
         let opts = fzf#wrap(
