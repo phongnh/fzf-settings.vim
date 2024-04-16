@@ -33,7 +33,7 @@ function! s:preview_options() abort
                 \ {
                 \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
                 \ },
-                \ fzf_settings#ShowRightPreview() ? 'right:60%' : 'up:60%',
+                \ 'up:60%',
                 \ g:fzf_preview_key
                 \ )
 endfunction
