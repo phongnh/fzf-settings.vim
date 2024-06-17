@@ -1,6 +1,6 @@
 function! s:preview_options(bang) abort
     return fzf#vim#with_preview(
-                \ a:bang ? 'up:60%:hidden' : (fzf_settings#ShowRightPreview() ? 'right:60%:hidden' : 'up:60%:hidden'),
+                \ a:bang ? 'up:60%:hidden' : (&columns >= 120 ? 'right:60%:hidden' : 'up:60%:hidden'),
                 \ g:fzf_preview_key)
 endfunction
 

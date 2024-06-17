@@ -15,10 +15,6 @@ function! fzf_settings#Warn(message) abort
     return 0
 endfunction
 
-function! fzf_settings#ShowRightPreview() abort
-    return &columns >= 120
-endfunction
-
 function! fzf_settings#execute_silent(cmd)
   silent keepjumps keepalt execute a:cmd
 endfunction
