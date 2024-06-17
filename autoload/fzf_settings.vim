@@ -25,18 +25,6 @@ function! fzf_settings#action_for(key, ...) abort
     return type(cmd) == v:t_string ? cmd : default
 endfunction
 
-" Toggle fzf follow links for Files and Rg
-function! fzf_settings#ToggleFollowLinks() abort
-    if g:fzf_follow_links == 0
-        let g:fzf_follow_links = 1
-        echo 'FZF follows symlinks!'
-    else
-        let g:fzf_follow_links = 0
-        echo 'FZF does not follow symlinks!'
-    endif
-    call fzf_settings#command#Init()
-endfunction
-
 function! fzf_settings#IsUniversalCtags(ctags_bin) abort
     return system(a:ctags_bin . ' --version') =~# 'Universal Ctags'
 endfunction
