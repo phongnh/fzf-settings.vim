@@ -1,14 +1,24 @@
+function! s:action_for(key, ...) abort
+    let default = a:0 ? a:1 : ''
+    let cmd = get(g:fzf_action, a:key, default)
+    return type(cmd) == v:t_string ? cmd : default
+endfunction
+
+function! s:execute_silent(cmd)
+    silent keepjumps keepalt execute a:cmd
+endfunction
+
 function! s:quickfix_sink(lines) abort
     " ['ctrl-m', 'zero/vim/core/helpers.vim:17:0:function! Source(vimrc) abort']
     if len(a:lines) < 2
         return
     endif
-    let cmd = fzf_settings#action_for(a:lines[0])
+    let cmd = s:action_for(a:lines[0])
     let cmd = empty(cmd) ? 'edit' : cmd
     let [filename, linenr, column] = split(a:lines[1], ':')[0:2]
     if stridx('edit', cmd) != 0 || fnamemodify(filename, ':p') !=# expand('%:p')
         normal! m'
-        silent! call fzf_settings#execute_silent(cmd . ' ' .   fnameescape(filename))
+        silent! call s:execute_silent(cmd . ' ' . fnameescape(filename))
     endif
     call cursor(linenr, column)
     normal! zvzz

@@ -15,16 +15,6 @@ function! fzf_settings#Warn(message) abort
     return 0
 endfunction
 
-function! fzf_settings#execute_silent(cmd)
-  silent keepjumps keepalt execute a:cmd
-endfunction
-
-function! fzf_settings#action_for(key, ...) abort
-    let default = a:0 ? a:1 : ''
-    let cmd = get(g:fzf_action, a:key, default)
-    return type(cmd) == v:t_string ? cmd : default
-endfunction
-
 function! fzf_settings#IsUniversalCtags(ctags_bin) abort
     return system(a:ctags_bin . ' --version') =~# 'Universal Ctags'
 endfunction
