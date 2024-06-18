@@ -135,12 +135,12 @@ command! ToggleFzfFollowLinks call <SID>ToggleFzfFollowLinks()
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#files#run(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir AFiles call fzf_settings#files#all(<q-args>, <bang>0)
 
-command! -bang -nargs=* Rg  call fzf_settings#grep#rg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* FRg call fzf_settings#grep#frg(shellescape(<q-args>), <bang>0)
-command! -bang -nargs=* RRg call fzf_settings#grep#rg(<q-args>, <bang>0)
-command! -bang -nargs=* RG  call fzf_settings#grep#rg2(<q-args>, <bang>0)
-command! -bang -nargs=* FRG call fzf_settings#grep#frg2(<q-args>, <bang>0)
-command! -bang -nargs=* RRG call fzf_settings#grep#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* Rg    call fzf_settings#grep#rg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* FRg   call fzf_settings#grep#frg(shellescape(<q-args>), <bang>0)
+command! -bang -nargs=* RRg   call fzf_settings#grep#rg_raw(<q-args>, <bang>0)
+command! -bang -nargs=* RgRaw call fzf_settings#grep#rg_raw(<q-args>, <bang>0)
+command! -bang -nargs=* RG    call fzf_settings#grep#rg2(<q-args>, <bang>0)
+command! -bang -nargs=* FRG   call fzf_settings#grep#frg2(<q-args>, <bang>0)
 
 " Extra commands
 command! -bang          Mru          call fzf_settings#mru#run(<bang>0)
