@@ -24,8 +24,8 @@ else
     let g:fzf_layout = {}
 endif
 
-if get(g:, 'fzf_inline_info', has('nvim') || has('gui_running'))
-    let $FZF_DEFAULT_OPTS .= ' --inline-info'
+if get(g:, 'fzf_inline_info', 1)
+    let $FZF_DEFAULT_OPTS .= ' --info=inline'
 endif
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
