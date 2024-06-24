@@ -1,30 +1,24 @@
-function! s:preview_options(bang) abort
-    return fzf#vim#with_preview(
-                \ a:bang ? 'up:60%' : (&columns >= 120 ? 'right:50%:hidden' : 'up:60%:hidden'),
-                \ g:fzf_preview_key)
-endfunction
-
 function! fzf_settings#grep#rg(query, ...) abort
     let bang = get(a:, 1, 0)
-    return call('fzf#vim#grep', [g:fzf_grep_command . ' -- ' . a:query, s:preview_options(bang), bang])
+    return fzf#vim#grep(g:fzf_grep_command . ' -- ' . a:query, fzf_settings#PreviewOptions(bang), bang)
 endfunction
 
 function! fzf_settings#grep#frg(query, ...) abort
     let bang = get(a:, 1, 0)
-    return call('fzf#vim#grep', [g:fzf_grep_command . ' -F -- ' . a:query, s:preview_options(bang), bang])
+    return fzf#vim#grep(g:fzf_grep_command . ' -F -- ' . a:query, fzf_settings#PreviewOptions(bang), bang)
 endfunction
 
 function! fzf_settings#grep#rg_raw(query, ...) abort
     let bang = get(a:, 1, 0)
-    return call('fzf#vim#grep', [g:fzf_grep_command . ' ' . a:query, s:preview_options(bang), bang])
+    return fzf#vim#grep(g:fzf_grep_command . ' ' . a:query, fzf_settings#PreviewOptions(bang), bang)
 endfunction
 
 function! fzf_settings#grep#rg2(query, ...) abort
     let bang = get(a:, 1, 0)
-    return call('fzf#vim#grep2', [g:fzf_grep_command . ' -- ', a:query, s:preview_options(bang), bang])
+    return fzf#vim#grep2(g:fzf_grep_command . ' -- ', a:query, fzf_settings#PreviewOptions(bang), bang)
 endfunction
 
 function! fzf_settings#grep#frg2(query, ...) abort
     let bang = get(a:, 1, 0)
-    return call('fzf#vim#grep2', [g:fzf_grep_command . ' -F -- ', a:query, s:preview_options(bang), bang])
+    return fzf#vim#grep2(g:fzf_grep_command . ' -F -- ', a:query, fzf_settings#PreviewOptions(bang), bang)
 endfunction

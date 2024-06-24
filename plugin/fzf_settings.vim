@@ -30,8 +30,9 @@ endif
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
-let g:fzf_vim = {}
-let g:fzf_vim.preview_window = ['hidden,right,50%,<70(up:50%)', g:fzf_preview_key]
+let g:fzf_vim = {
+            \ 'preview_window': ['hidden,right,50%,<120(up:50%)', g:fzf_preview_key],
+            \ }
 
 let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
 let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.config/ctags/ignore'))
