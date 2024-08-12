@@ -33,7 +33,7 @@ function! s:quickfix_source() abort
     return map(getqflist(), 's:quickfix_format(v:val)')
 endfunction
 
-function! fzf_settings#quickfix#run(...) abort
+function! fzf_settings#quickfix#quickfix(...) abort
     let items = s:quickfix_source()
     if empty(items)
         call fzf_settings#Warn('No quickfix items!')
@@ -54,6 +54,7 @@ function! fzf_settings#quickfix#run(...) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
+    execute 'cclose'
     call fzf#run(opts)
 endfunction
 
@@ -82,5 +83,6 @@ function! fzf_settings#quickfix#loclist(...) abort
                 \ 'source': items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
+    execute 'lclose'
     call fzf#run(opts)
 endfunction
