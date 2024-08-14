@@ -30,18 +30,13 @@ endif
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
+let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
+let g:fzf_ctags_ignore = expand(get(g:, 'fzf_ctags_ignore', ''))
+
 let g:fzf_vim = {
             \ 'preview_window': ['hidden,right,50%,<120(up:50%)', g:fzf_preview_key],
+            \ 'tags_command':   g:fzf_ctags_bin . (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' . g:fzf_ctags_ignore : '') . ' -R',
             \ }
-
-let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
-let g:fzf_ctags_ignore = get(g:, 'fzf_ctags_ignore', expand('~/.config/ctags/ignore'))
-
-if get(g:, 'fzf_universal_ctags', fzf_settings#IsUniversalCtags(g:fzf_ctags_bin)) && filereadable(g:fzf_ctags_ignore)
-    let g:fzf_vim.tags_command = printf('%s --exclude=@%s -R', g:fzf_ctags_bin, g:fzf_ctags_ignore)
-else
-    let g:fzf_vim.tags_command = printf('%s -R', g:fzf_ctags_bin)
-endif
 
 let g:fzf_find_tool          = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_find_tool          = g:fzf_find_tool ==# 'rg' && executable('rg') ? 'rg' : 'fd'
