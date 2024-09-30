@@ -39,7 +39,6 @@ let g:fzf_vim = {
             \ }
 
 let g:fzf_find_tool          = get(g:, 'fzf_find_tool', 'fd')
-let g:fzf_find_tool          = g:fzf_find_tool ==# 'rg' && executable('rg') ? 'rg' : 'fd'
 let g:fzf_find_no_ignore_vcs = get(g:, 'fzf_find_no_ignore_vcs', 0)
 let g:fzf_follow_links       = get(g:, 'fzf_follow_links', 1)
 let g:fzf_grep_no_ignore_vcs = get(g:, 'fzf_grep_no_ignore_vcs', 0)
@@ -61,71 +60,12 @@ let g:fzf_colors = {
             \ 'header':     ['fg', 'Comment'],
             \ }
 
-function! s:BuildFilesCommand() abort
-    let files_commands = {
-                \ 'fd': 'fd --type file --color never --hidden',
-                \ 'rg': 'rg --files --color never --ignore-dot --ignore-parent --hidden',
-                \ }
-
-    if g:fzf_find_tool ==# 'rg'
-        let g:fzf_files_command = files_commands['rg']
-    else
-        let g:fzf_files_command = files_commands['fd']
-    endif
-
-    let g:fzf_files_command .= (g:fzf_follow_links ? ' --follow' : '')
-    let g:fzf_files_command .= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
-
-    return g:fzf_files_command
-endfunction
-
-function! s:BuildAFilesCommand() abort
-    let afiles_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore --exclude .git --hidden --follow',
-                \ 'rg': 'rg --files --color never --no-ignore --exclude .git --hidden --follow',
-                \ }
-
-    if g:fzf_find_tool ==# 'rg'
-        let g:fzf_afiles_command = afiles_commands['rg']
-    else
-        let g:fzf_afiles_command = afiles_commands['fd']
-    endif
-
-    return g:fzf_afiles_command
-endfunction
-
-" Rg command with preview window
-function! s:BuildGrepCommand() abort
-    let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
-    let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
-endfunction
-
-function! s:SetupFzfSettings() abort
-    call s:BuildFilesCommand()
-    call s:BuildAFilesCommand()
-    call s:BuildGrepCommand()
-endfunction
-
 augroup FzfSettings
     autocmd!
-    autocmd VimEnter * call <SID>SetupFzfSettings()
+    autocmd VimEnter * call fzf_settings#command#init()
 augroup END
 
-" Toggle fzf follow links for Files and Rg
-function! s:ToggleFzfFollowLinks() abort
-    if g:fzf_follow_links == 0
-        let g:fzf_follow_links = 1
-        echo 'FZF follows symlinks!'
-    else
-        let g:fzf_follow_links = 0
-        echo 'FZF does not follow symlinks!'
-    endif
-    call s:BuildFilesCommand()
-    call s:BuildGrepCommand()
-endfunction
-
-command! ToggleFzfFollowLinks call <SID>ToggleFzfFollowLinks()
+command! ToggleFzfFollowLinks call fzf_settings#files#toggle_follow_links()
 
 " Files command with preview window
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#files#run(<q-args>, <bang>0)
