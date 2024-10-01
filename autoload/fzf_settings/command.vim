@@ -3,7 +3,7 @@ function! s:BuildFilesCommand() abort
                 \ 'fd': 'fd --type file --color never --hidden',
                 \ 'rg': 'rg --files --color never --ignore-dot --ignore-parent --hidden',
                 \ }
-    let g:fzf_files_command = l:files_commands[g:fzf_find_tool ==# 'rg' : 'fd']
+    let g:fzf_files_command = l:files_commands[g:fzf_find_tool ==# 'rg' ? 'rg' : 'fd']
     let g:fzf_files_command .= (g:fzf_follow_links ? ' --follow' : '')
     let g:fzf_files_command .= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
     return g:fzf_files_command
@@ -14,7 +14,7 @@ function! s:BuildAFilesCommand() abort
                 \ 'fd': 'fd --type file --color never --no-ignore --exclude .git --hidden --follow',
                 \ 'rg': 'rg --files --color never --no-ignore --exclude .git --hidden --follow',
                 \ }
-    let g:fzf_afiles_command = l:afiles_commands[g:fzf_find_tool ==# 'rg' : 'fd']
+    let g:fzf_afiles_command = l:afiles_commands[g:fzf_find_tool ==# 'rg' ? 'rg' : 'fd']
     return g:fzf_afiles_command
 endfunction
 
