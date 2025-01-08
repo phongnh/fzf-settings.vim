@@ -20,23 +20,10 @@ endfunction
 
 " Rg command with preview window
 function! s:BuildGrepCommand() abort
-    if !executable(g:fzf_grep_tool) || empty(filter(['rg', 'ugrep'], 'v:val ==# g:fzf_grep_tool'))
-        let g:fzf_grep_tool = 'grep'
-    endif
-    if g:fzf_grep_tool ==# 'grep' && executable('rg')
-        let g:fzf_grep_tool = 'rg'
-    elseif g:fzf_grep_tool ==# 'grep' && executable('ugrep')
-        let g:fzf_grep_tool = 'ugrep'
-    endif
-    if g:fzf_grep_tool ==# 'rg'
+    if executable('rg')
         let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
         let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
         let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    elseif g:fzf_grep_tool ==# 'ugrep'
-        let g:fzf_grep_command = 'ugrep -s --ignore-binary --color=always -H --line-number --column-number --tabs=1 --smart-case -.'
-        let g:fzf_grep_command .= filereadable('~/.config/fd/ignore') ? ' --exclude-from=~/.config/fd/ignore' : ''
-        let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? '' : ' --ignore-files'
-        let g:fzf_grep_command .= g:fzf_follow_links ? ' -R' : ''
     else
         let g:fzf_grep_command = 'grep -s -I --color=always -R -H --line-number'
         let g:fzf_grep_command .= g:fzf_follow_links ? ' -S' : ''
