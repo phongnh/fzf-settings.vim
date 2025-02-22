@@ -38,7 +38,6 @@ let g:fzf_vim = {
             \ 'tags_command':   g:fzf_ctags_bin . (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' . g:fzf_ctags_ignore : '') . ' -R',
             \ }
 
-let g:fzf_find_tool          = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_find_no_ignore_vcs = get(g:, 'fzf_find_no_ignore_vcs', 0)
 let g:fzf_follow_links       = get(g:, 'fzf_follow_links', 1)
 let g:fzf_grep_no_ignore_vcs = get(g:, 'fzf_grep_no_ignore_vcs', 0)
@@ -60,10 +59,8 @@ let g:fzf_colors = {
             \ 'header':     ['fg', 'Comment'],
             \ }
 
-augroup FzfSettings
-    autocmd!
-    autocmd VimEnter * call fzf_settings#command#init()
-augroup END
+" Setup commands
+call fzf_settings#command#init()
 
 command! ToggleFzfFollowLinks call fzf_settings#files#toggle_follow_links()
 
