@@ -46,7 +46,7 @@ function! fzf_settings#quickfix#quickfix(...) abort
                 \     'placeholder': '{1}:{2}',
                 \     'options': ['--layout=reverse-list', '-m', '-d', ':', '--with-nth=1..', '-n', '1,2,4..', '--prompt', 'Quickfix> ', '--preview-window', '+{2}-/2'],
                 \   },
-                \   'up:60%:hidden',
+                \   'hidden,up,60%,border-line',
                 \   g:fzf_preview_key
                 \ ),
                 \ get(a:, 1, 0))
@@ -75,7 +75,7 @@ function! fzf_settings#quickfix#loclist(...) abort
                 \     'placeholder': '{1}:{2}',
                 \     'options': ['--layout=reverse-list', '-m', '-d', ':', '--with-nth=1..', '-n', '1,2,4..', '--prompt', 'LocationList> ', '--preview-window', '+{2}-/2'],
                 \   },
-                \   'up:60%:hidden',
+                \   'hidden,up,60%,border-line',
                 \   g:fzf_preview_key
                 \ ),
                 \ get(a:, 1, 0))

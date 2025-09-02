@@ -25,7 +25,7 @@ else
 endif
 
 if get(g:, 'fzf_inline_info', 1)
-    let $FZF_DEFAULT_OPTS .= ' --info=inline'
+    let $FZF_DEFAULT_OPTS .= ' --info=inline-right'
 endif
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
@@ -34,7 +34,7 @@ let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
 let g:fzf_ctags_ignore = expand(get(g:, 'fzf_ctags_ignore', ''))
 
 let g:fzf_vim = {
-            \ 'preview_window': ['hidden,right,50%,<120(up:50%)', g:fzf_preview_key],
+            \ 'preview_window': ['hidden,right,50%,<120(up,50%),border-line', g:fzf_preview_key],
             \ 'tags_command':   g:fzf_ctags_bin . (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' . g:fzf_ctags_ignore : '') . ' -R',
             \ }
 

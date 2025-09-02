@@ -16,7 +16,7 @@ function! fzf_settings#boutline#run(query, bang) abort
                     \ s:tag_commands(),
                     \ fzf#vim#with_preview(
                     \   { 'placeholder': '{2}:{3..}', 'options': ['--prompt', 'Outline> '] },
-                    \   'up:60%',
+                    \   'up,60%,border-line',
                     \   g:fzf_preview_key
                     \ ),
                     \ a:bang

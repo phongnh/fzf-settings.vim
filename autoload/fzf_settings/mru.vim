@@ -33,7 +33,7 @@ function! s:preview_options() abort
                 \ {
                 \   'options': ['-m', '--header-lines', !empty(expand('%')), '--prompt', 'MRU> '],
                 \ },
-                \ 'up:60%',
+                \ 'up,60%,border-line',
                 \ g:fzf_preview_key
                 \ )
 endfunction
