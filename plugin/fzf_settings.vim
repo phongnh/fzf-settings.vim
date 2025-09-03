@@ -24,9 +24,12 @@ else
     let g:fzf_layout = {}
 endif
 
-if get(g:, 'fzf_inline_info', 1)
+if $FZF_DEFAULT_OPTS !~# '--info=inline-right'
     let $FZF_DEFAULT_OPTS .= ' --info=inline-right'
 endif
+
+" Toggle wrap in preview window
+let $FZF_DEFAULT_OPTS .= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%)'"
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
@@ -34,9 +37,11 @@ let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
 let g:fzf_ctags_ignore = expand(get(g:, 'fzf_ctags_ignore', ''))
 
 let g:fzf_vim = {
-            \ 'preview_window': ['hidden,right,50%,<120(up,50%),border-line', g:fzf_preview_key],
+            \ 'preview_window': ['right,60%,hidden,border-line,<80(up,hidden)', g:fzf_preview_key],
             \ 'tags_command':   g:fzf_ctags_bin . (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' . g:fzf_ctags_ignore : '') . ' -R',
             \ }
+
+" let g:fzf_vim.buffers_options = ['--style', 'full', '--border-label', ' Open Buffers ']
 
 let g:fzf_find_tool          = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_find_no_ignore_vcs = get(g:, 'fzf_find_no_ignore_vcs', 0)
@@ -46,14 +51,17 @@ let g:fzf_grep_no_ignore_vcs = get(g:, 'fzf_grep_no_ignore_vcs', 0)
 let g:fzf_colors = {
             \ 'fg':         ['fg', 'Normal'],
             \ 'bg':         ['bg', 'Normal'],
-            \ 'preview-bg': ['bg', 'NormalFloat'],
             \ 'hl':         ['fg', 'Search'],
             \ 'fg+':        ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
             \ 'bg+':        ['bg', 'CursorLine', 'CursorColumn'],
             \ 'hl+':        ['fg', 'Statement'],
+            \ 'query':      ['fg', 'Normal'],
+            \ 'disabled':   ['fg', 'Ignore'],
+            \ 'preview-fg': ['fg', 'NormalFloat'],
+            \ 'preview-bg': ['bg', 'NormalFloat'],
             \ 'info':       ['fg', 'PreProc'],
             \ 'border':     ['fg', 'Ignore'],
-            \ 'prompt':     ['fg', 'Conditional'],
+            \ 'prompt':     ['fg', 'Conditional', 'Comment'],
             \ 'pointer':    ['fg', 'Exception'],
             \ 'marker':     ['fg', 'Keyword'],
             \ 'spinner':    ['fg', 'Label'],

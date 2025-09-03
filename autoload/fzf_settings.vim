@@ -17,6 +17,6 @@ endfunction
 
 function! fzf_settings#PreviewOptions(...) abort
     return fzf#vim#with_preview(
-                \ get(a:, 1, 0) ? 'up,60%,border-line' : (&columns >= 120 ? 'hidden,right,60%,border-line' : 'hidden,up,60%,border-line'),
+                \ get(a:, 1, 0) ? 'up,60%,border-line' : (&columns >= 120 ? 'right,60%,hidden,border-line' : g:fzf_vim.preview_window[0]),
                 \ g:fzf_preview_key)
 endfunction
