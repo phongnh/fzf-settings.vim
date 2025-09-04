@@ -29,7 +29,7 @@ if $FZF_DEFAULT_OPTS !~# '--info=inline-right'
 endif
 
 " Toggle wrap in preview window
-let $FZF_DEFAULT_OPTS .= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%)'"
+let $FZF_DEFAULT_OPTS .= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%),shift-left:preview-half-page-up,shift-right:preview-half-page-down'"
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
