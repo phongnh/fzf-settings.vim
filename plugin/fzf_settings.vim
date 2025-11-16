@@ -68,11 +68,6 @@ let g:fzf_colors = {
             \ 'header':     ['fg', 'Comment'],
             \ }
 
-augroup FzfSettings
-    autocmd!
-    autocmd VimEnter * call fzf_settings#command#init()
-augroup END
-
 command! ToggleFzfFollowLinks call fzf_settings#files#toggle_follow_links()
 
 " Files command with preview window
