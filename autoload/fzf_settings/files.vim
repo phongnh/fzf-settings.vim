@@ -1,13 +1,13 @@
 function! fzf_settings#files#run(dir, ...) abort
-    let bang = get(a:, 1, 0)
-    let opts = extend(fzf_settings#PreviewOptions(bang), { 'source': g:fzf_files_command })
-    return fzf#vim#files(a:dir, opts, bang)
+    let l:bang = get(a:, 1, 0)
+    let l:opts = extend(fzf_settings#PreviewOptions(l:bang), { 'source': g:fzf_files_command })
+    return fzf#vim#files(a:dir, l:opts, l:bang)
 endfunction
 
 function! fzf_settings#files#all(dir, ...) abort
-    let bang = get(a:, 1, 0)
-    let opts = extend(fzf_settings#PreviewOptions(bang), { 'source': g:fzf_afiles_command })
-    return fzf#vim#files(a:dir, opts, bang)
+    let l:bang = get(a:, 1, 0)
+    let l:opts = extend(fzf_settings#PreviewOptions(l:bang), { 'source': g:fzf_afiles_command })
+    return fzf#vim#files(a:dir, l:opts, l:bang)
 endfunction
 
 " Toggle fzf follow links for Files and Rg

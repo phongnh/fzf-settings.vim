@@ -1,7 +1,7 @@
 function! s:action_for(key, ...) abort
-    let default = a:0 ? a:1 : ''
-    let cmd = get(g:fzf_action, a:key, default)
-    return type(cmd) == v:t_string ? cmd : default
+    let l:default = a:0 ? a:1 : ''
+    let l:cmd = get(g:fzf_action, a:key, l:default)
+    return type(l:cmd) == v:t_string ? l:cmd : l:default
 endfunction
 
 function! s:execute_silent(cmd)
@@ -13,49 +13,52 @@ function! s:quickfix_sink(lines) abort
     if len(a:lines) < 2
         return
     endif
-    let cmd = s:action_for(a:lines[0])
-    let cmd = empty(cmd) ? 'edit' : cmd
-    let [filename, linenr, column] = split(a:lines[1], ':')[0:2]
-    if stridx('edit', cmd) != 0 || fnamemodify(filename, ':p') !=# expand('%:p')
+    let l:cmd = s:action_for(a:lines[0])
+    let l:cmd = empty(l:cmd) ? 'edit' : l:cmd
+    let [l:filename, l:linenr, l:column] = split(a:lines[1], ':')[0:2]
+    if stridx('edit', l:cmd) != 0 || fnamemodify(l:filename, ':p') !=# expand('%:p')
         normal! m'
-        silent! call s:execute_silent(cmd . ' ' . fnameescape(filename))
+        silent! call s:execute_silent(l:cmd .. ' ' .. fnameescape(l:filename))
     endif
-    call cursor(linenr, column)
+    call cursor(l:linenr, l:column)
     normal! zvzz
 endfunction
 
 " Convert Quickfix/LocationList item to Grep format
 function! s:quickfix_format(item) abort
-    return bufname(a:item.bufnr) . ':' . a:item.lnum . ':' . a:item.col . ':' . a:item.text
+    return bufname(a:item.bufnr) .. ':' .. a:item.lnum .. ':' .. a:item.col .. ':' .. a:item.text
 endfunction
 
 function! s:quickfix_source() abort
     return map(getqflist(), 's:quickfix_format(v:val)')
 endfunction
 
-function! fzf_settings#quickfix#quickfix(...) abort
-    let items = s:quickfix_source()
-    if empty(items)
-        call fzf_settings#Warn('No quickfix items!')
+function! s:run_fzf_list(name, source_items, close_cmd, bang) abort
+    if empty(a:source_items)
+        call fzf_settings#Warn(printf('No %s items!', a:name))
         return
     endif
-    let opts = fzf#wrap(
-                \ 'quickfix',
+    let l:opts = fzf#wrap(
+                \ a:name,
                 \ fzf#vim#with_preview(
                 \   {
                 \     'placeholder': '{1}:{2}',
-                \     'options': ['--layout=reverse-list', '-m', '-d', ':', '--with-nth=1..', '-n', '1,2,4..', '--prompt', 'Quickfix> ', '--preview-window', '+{2}-/2'],
+                \     'options': ['--layout=reverse-list', '-m', '-d', ':', '--with-nth=1..', '-n', '1,2,4..', '--prompt', a:name .. '> ', '--preview-window', '+{2}-/2'],
                 \   },
                 \   'hidden,up,60%,border-line',
                 \   g:fzf_preview_key
                 \ ),
-                \ get(a:, 1, 0))
-    call extend(opts, {
-                \ 'source': items,
+                \ a:bang)
+    call extend(l:opts, {
+                \ 'source': a:source_items,
                 \ 'sink*': function('s:quickfix_sink'),
                 \ })
-    execute 'cclose'
-    call fzf#run(opts)
+    execute a:close_cmd
+    call fzf#run(l:opts)
+endfunction
+
+function! fzf_settings#quickfix#quickfix(...) abort
+    call s:run_fzf_list('quickfix', s:quickfix_source(), 'cclose', get(a:, 1, 0))
 endfunction
 
 function! s:location_list_source() abort
@@ -63,26 +66,5 @@ function! s:location_list_source() abort
 endfunction
 
 function! fzf_settings#quickfix#loclist(...) abort
-    let items = s:location_list_source()
-    if empty(items)
-        call fzf_settings#Warn('No location list items!')
-        return
-    endif
-    let opts = fzf#wrap(
-                \ 'location-list',
-                \ fzf#vim#with_preview(
-                \   {
-                \     'placeholder': '{1}:{2}',
-                \     'options': ['--layout=reverse-list', '-m', '-d', ':', '--with-nth=1..', '-n', '1,2,4..', '--prompt', 'LocationList> ', '--preview-window', '+{2}-/2'],
-                \   },
-                \   'hidden,up,60%,border-line',
-                \   g:fzf_preview_key
-                \ ),
-                \ get(a:, 1, 0))
-    call extend(opts, {
-                \ 'source': items,
-                \ 'sink*': function('s:quickfix_sink'),
-                \ })
-    execute 'lclose'
-    call fzf#run(opts)
+    call s:run_fzf_list('location-list', s:location_list_source(), 'lclose', get(a:, 1, 0))
 endfunction

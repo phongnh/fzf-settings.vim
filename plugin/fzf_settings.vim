@@ -25,11 +25,11 @@ else
 endif
 
 if $FZF_DEFAULT_OPTS !~# '--info=inline-right'
-    let $FZF_DEFAULT_OPTS .= ' --info=inline-right'
+    let $FZF_DEFAULT_OPTS ..= ' --info=inline-right'
 endif
 
 " Toggle wrap in preview window
-let $FZF_DEFAULT_OPTS .= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%),shift-left:preview-half-page-up,shift-right:preview-half-page-down'"
+let $FZF_DEFAULT_OPTS ..= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%),shift-left:preview-half-page-up,shift-right:preview-half-page-down'"
 
 let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
 
@@ -38,7 +38,7 @@ let g:fzf_ctags_ignore = expand(get(g:, 'fzf_ctags_ignore', ''))
 
 let g:fzf_vim = {
             \ 'preview_window': ['right,60%,hidden,border-line,<80(up,hidden)', g:fzf_preview_key],
-            \ 'tags_command':   g:fzf_ctags_bin . (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' . g:fzf_ctags_ignore : '') . ' -R',
+            \ 'tags_command':   g:fzf_ctags_bin .. (filereadable(g:fzf_ctags_ignore) ? ' --exclude=@' .. g:fzf_ctags_ignore : '') .. ' -R',
             \ }
 
 " let g:fzf_vim.buffers_options = ['--style', 'full', '--border-label', ' Open Buffers ']
