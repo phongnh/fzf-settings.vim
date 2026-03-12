@@ -4,8 +4,8 @@ function! s:BuildFilesCommand() abort
                 \ 'rg': 'rg --files --color never --ignore-dot --ignore-parent --hidden',
                 \ }
     let g:fzf_files_command = l:files_commands[g:fzf_find_tool ==# 'rg' ? 'rg' : 'fd']
-    let g:fzf_files_command .= (g:fzf_follow_links ? ' --follow' : '')
-    let g:fzf_files_command .= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
+    let g:fzf_files_command ..= (g:fzf_follow_links ? ' --follow' : '')
+    let g:fzf_files_command ..= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
     return g:fzf_files_command
 endfunction
 
@@ -21,8 +21,8 @@ endfunction
 " Rg command with preview window
 function! s:BuildGrepCommand() abort
     let g:fzf_grep_command = 'rg --color always -H --no-heading --line-number --smart-case --hidden'
-    let g:fzf_grep_command .= g:fzf_follow_links ? ' --follow' : ''
-    let g:fzf_grep_command .= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
+    let g:fzf_grep_command ..= g:fzf_follow_links ? ' --follow' : ''
+    let g:fzf_grep_command ..= g:fzf_grep_no_ignore_vcs ? ' --no-ignore-vcs' : ''
 endfunction
 
 function! fzf_settings#command#init() abort
