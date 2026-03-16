@@ -35,7 +35,7 @@ endfunction
 
 function! s:run_fzf_list(name, source_items, close_cmd, bang) abort
     if empty(a:source_items)
-        call fzf_settings#Warn(printf('No %s items!', a:name))
+        call fzf_settings#Warn(printf('No %s items!', a:name ==# 'Quickfix' ? 'quickfix' : 'location list'))
         return
     endif
     let l:opts = fzf#wrap(
@@ -58,7 +58,7 @@ function! s:run_fzf_list(name, source_items, close_cmd, bang) abort
 endfunction
 
 function! fzf_settings#quickfix#quickfix(...) abort
-    call s:run_fzf_list('quickfix', s:quickfix_source(), 'cclose', get(a:, 1, 0))
+    call s:run_fzf_list('Quickfix', s:quickfix_source(), 'cclose', get(a:, 1, 0))
 endfunction
 
 function! s:location_list_source() abort
@@ -66,5 +66,5 @@ function! s:location_list_source() abort
 endfunction
 
 function! fzf_settings#quickfix#loclist(...) abort
-    call s:run_fzf_list('location-list', s:location_list_source(), 'lclose', get(a:, 1, 0))
+    call s:run_fzf_list('LocationList', s:location_list_source(), 'lclose', get(a:, 1, 0))
 endfunction
