@@ -43,7 +43,6 @@ let g:fzf_vim = {
 
 " let g:fzf_vim.buffers_options = ['--style', 'full', '--border-label', ' Open Buffers ']
 
-let g:fzf_find_tool    = get(g:, 'fzf_find_tool', 'fd')
 let g:fzf_follow_links = get(g:, 'fzf_follow_links', 1)
 
 let g:fzf_colors = {

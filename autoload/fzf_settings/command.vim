@@ -1,21 +1,19 @@
 function! s:BuildFilesCommand() abort
-    let l:files_commands = {
-                \ 'fd': 'fd --type file --color never --hidden',
-                \ 'rg': 'rg --files --color never --ignore-dot --ignore-parent --hidden',
-                \ }
-    let g:fzf_files_command = l:files_commands[g:fzf_find_tool ==# 'rg' ? 'rg' : 'fd']
-    let g:fzf_files_command ..= (g:fzf_follow_links ? ' --follow' : '')
-    let g:fzf_files_command ..= (g:fzf_find_no_ignore_vcs ? ' --no-ignore-vcs' : '')
-    return g:fzf_files_command
+    if executable('fd')
+        let g:fzf_files_command = 'fd --type file --color never --hidden'
+        let g:fzf_files_command ..= (g:fzf_follow_links ? ' --follow' : '')
+    elseif executable('rg')
+        let g:fzf_files_command = 'rg --files --color never --ignore-dot --ignore-parent --hidden'
+        let g:fzf_files_command ..= (g:fzf_follow_links ? ' --follow' : '')
+    endif
 endfunction
 
 function! s:BuildAFilesCommand() abort
-    let l:afiles_commands = {
-                \ 'fd': 'fd --type file --color never --no-ignore --exclude .git --hidden --follow',
-                \ 'rg': 'rg --files --color never --no-ignore --exclude .git --hidden --follow',
-                \ }
-    let g:fzf_afiles_command = l:afiles_commands[g:fzf_find_tool ==# 'rg' ? 'rg' : 'fd']
-    return g:fzf_afiles_command
+    if executable('fd')
+        let g:fzf_afiles_command = 'fd --type file --color never --no-ignore --exclude .git --hidden --follow'
+    elseif executable('rg')
+        let g:fzf_afiles_command = 'rg': 'rg --files --color never --no-ignore --exclude .git --hidden --follow'
+    endif
 endfunction
 
 " Rg command with preview window
