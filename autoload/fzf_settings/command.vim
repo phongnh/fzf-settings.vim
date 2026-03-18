@@ -10,9 +10,9 @@ endfunction
 
 function! s:BuildAFilesCommand() abort
     if executable('fd')
-        let g:fzf_afiles_command = 'fd --type file --color never --no-ignore --exclude .git --hidden --follow'
+        let g:fzf_afiles_command = 'fd --type file --color never --no-ignore --hidden --follow --exclude ".git/*/"'
     elseif executable('rg')
-        let g:fzf_afiles_command = 'rg --files --color never --no-ignore --glob !.git --hidden --follow'
+        let g:fzf_afiles_command = 'rg --files --color never --no-ignore --hidden --follow --glob "!.git/*/"'
     endif
 endfunction
 
