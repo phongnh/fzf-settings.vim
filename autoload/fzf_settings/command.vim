@@ -6,7 +6,7 @@ function! s:BuildFilesCommand() abort
         let g:fzf_files_command = 'rg --files --color never --ignore-dot --ignore-parent --hidden'
         let g:fzf_files_command ..= (g:fzf_follow_links ? ' --follow' : '')
     elseif executable('ugrep')
-        let g:fzf_files_command = 'ugrep "" -IR.l --color=never --ignore-files --ignore-files=.ignore'
+        let g:fzf_files_command = 'ugrep "" -IR.l --color=never --ignore-files --ignore-files=.ignore --exclude-dir=.git'
         let g:fzf_files_command ..= (g:fzf_follow_links ? '' : ' -p')
     endif
 endfunction
@@ -17,7 +17,7 @@ function! s:BuildAFilesCommand() abort
     elseif executable('rg')
         let g:fzf_afiles_command = 'rg --files --color never --no-ignore --hidden --follow --glob "!.git/*/"'
     elseif executable('ugrep')
-        let g:fzf_afiles_command = 'ugrep "" -IR.l --color=never --ignore-files --ignore-files=.ignore'
+        let g:fzf_afiles_command = 'ugrep "" -IR.l --color=never --no-ignore-files --exclude-dir=.git'
         let g:fzf_afiles_command ..= (g:fzf_follow_links ? '' : ' -p')
     endif
 endfunction
