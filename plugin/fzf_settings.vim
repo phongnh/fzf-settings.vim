@@ -87,4 +87,9 @@ command! -bang          Quickfix     call fzf_settings#quickfix#quickfix(<bang>0
 command! -bang          LocationList call fzf_settings#quickfix#loclist(<bang>0)
 command! -bang          Registers    call fzf_settings#registers#run(<bang>0)
 
+augroup FZFSettingsAutocmds
+  autocmd!
+  autocmd VimEnter * ++once silent! delcommand Ag
+augroup END
+
 let g:loaded_fzf_settings_vim = 1
