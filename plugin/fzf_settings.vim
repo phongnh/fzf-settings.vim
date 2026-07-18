@@ -17,8 +17,8 @@ let g:fzf_action = {
             \ }
 
 " Check if Popup/Floating Win is available for FZF or not
-if (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2')) ||
-            \ (exists('*popup_create') && has('patch-8.2.191'))
+if (exists('*popup_create') && has('patch-8.2.191')) ||
+            \ (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2'))
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
 else
     let g:fzf_layout = {}
@@ -71,11 +71,12 @@ command! ToggleFzfFollowLinks call fzf_settings#files#toggle_follow_links()
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#files#run(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir AFiles call fzf_settings#files#all(<q-args>, <bang>0)
 
-command! -bang -nargs=* Rg    call fzf#vim#grep(g:fzf_grep_command .. ' -- ' .. fzf#shellescape(<q-args>), fzf#vim#with_preview(<bang>0), <bang>0)
+command! -bang -nargs=* Rg call fzf#vim#grep(g:fzf_grep_command .. ' -- ' .. fzf#shellescape(<q-args>), fzf#vim#with_preview(<bang>0), <bang>0)
+command! -bang -nargs=* RG call fzf#vim#grep2(g:fzf_grep_command .. ' -- ', <q-args>, fzf_settings#PreviewOptions(<bang>0), <bang>0)
+
 command! -bang -nargs=* FRg   call fzf#vim#grep(g:fzf_grep_command .. ' -F -- ' .. fzf#shellescape(<q-args>), fzf#vim#with_preview(<bang>0), <bang>0)
 command! -bang -nargs=* RRg   call fzf#vim#grep(g:fzf_grep_command .. ' ' .. <q-args>, fzf#vim#with_preview(<bang>0), <bang>0)
 command! -bang -nargs=* RgRaw call fzf#vim#grep(g:fzf_grep_command .. ' ' .. <q-args>, fzf#vim#with_preview(<bang>0), <bang>0)
-command! -bang -nargs=* RG    call fzf#vim#grep2(g:fzf_grep_command .. ' -- ', <q-args>, fzf_settings#PreviewOptions(<bang>0), <bang>0)
 command! -bang -nargs=* FRG   call fzf#vim#grep2(g:fzf_grep_command .. ' -F -- ', <q-args>, fzf_settings#PreviewOptions(<bang>0), <bang>0)
 
 " Extra commands
