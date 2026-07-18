@@ -8,7 +8,7 @@ function! fzf_settings#grep#rg(query, ...) abort
     endif
 
     let l:fzf_opts = fzf#vim#with_preview(l:bang)
-    call extend(l:fzf_opts.options, ['--prompt', 'Rg (fzf)> '])
+    call extend(l:fzf_opts.options, ['--prompt', 'Rg(fzf)> '])
 
     call fzf#vim#grep(l:cmd, l:fzf_opts, l:bang)
 endfunction
@@ -28,7 +28,7 @@ function! fzf_settings#grep#filter(opts) abort
     let l:cmd = join(l:cmd, ' ')
 
     let l:fzf_opts = fzf_settings#PreviewOptions(l:opts.bang)
-    call extend(l:fzf_opts.options, ['--prompt', 'Rg (fzf)> '])
+    call extend(l:fzf_opts.options, ['--prompt', 'Rg(fzf)> '])
 
     call fzf#vim#grep(l:cmd, l:fzf_opts, a:opts.bang)
 endfunction
@@ -37,7 +37,7 @@ function! fzf_settings#grep#RG(query, ...) abort
     let l:bang = get(a:, 1, 0)
 
     let l:fzf_opts = fzf#vim#with_preview(l:bang)
-    call extend(l:fzf_opts.options, ['--prompt', 'RG (regex)> '])
+    call extend(l:fzf_opts.options, ['--prompt', 'RG(regex)> '])
 
     call fzf#vim#grep2(g:fzf_grep_command .. ' -- ', a:query, l:fzf_opts, l:bang)
 endfunction
@@ -51,7 +51,7 @@ function! fzf_settings#grep#live(opts) abort
     endif
 
     let l:fzf_opts = fzf_settings#PreviewOptions(l:opts.bang)
-    call extend(l:fzf_opts.options, ['--prompt', printf('RG (%s)> ', l:opts.string ? 'string' : 'regex')])
+    call extend(l:fzf_opts.options, ['--prompt', printf('RG(%s)> ', l:opts.string ? 'string' : 'regex')])
 
     call fzf#vim#grep2(l:cmd .. ' -e ', l:opts.args, l:fzf_opts, l:opts.bang)
 endfunction
