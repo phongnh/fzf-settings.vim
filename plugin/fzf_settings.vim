@@ -79,6 +79,8 @@ command! -bang -nargs=* RRg   call fzf#vim#grep(g:fzf_grep_command .. ' ' .. <q-
 command! -bang -nargs=* RgRaw call fzf#vim#grep(g:fzf_grep_command .. ' ' .. <q-args>, fzf#vim#with_preview(<bang>0), <bang>0)
 command! -bang -nargs=* FRG   call fzf#vim#grep2(g:fzf_grep_command .. ' -F -- ', <q-args>, fzf_settings#PreviewOptions(<bang>0), <bang>0)
 
+command! -bang -nargs=* LiveFilter     call fzf_settings#grep#filter({ 'args': <q-args>, 'bang': <bang>0 })
+
 " Extra commands
 command! -bang          Mru          call fzf_settings#mru#run(<bang>0)
 command! -bang          MruCwd       call fzf_settings#mru#run_in_cwd(<bang>0)
