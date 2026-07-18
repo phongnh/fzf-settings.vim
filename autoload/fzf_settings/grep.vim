@@ -9,22 +9,17 @@ function! fzf_settings#grep#rg(query, ...) abort
 endfunction
 
 function! fzf_settings#grep#filter(opts) abort
-    let l:opts = extend({ 'args': [], 'bang': 0 }, a:opts)
+    let l:opts = extend({ 'args': '', 'bang': 0 }, a:opts)
 
-    if type(l:opts.args) == v:t_string
-        let l:opts.args = [l:opts.args]
-    elseif type(l:opts.args) != v:t_list
-        let l:opts.args = []
-    endif
-
-    call filter(l:opts.args, '!empty(v:val)')
+    let l:cmd = [g:fzf_grep_command]
 
     if empty(l:opts.args)
         " Skips lines that are empty or contain only spaces/tabs.
-        call extend(l:opts.args, ['--colors="match:none"', fzf#shellescape('\S')])
+        call extend(l:cmd, ['--colors="match:none"', fzf#shellescape('\S')])
+    else
+        call extend(l:cmd, [l:opts.args])
     endif
 
-    let l:cmd = extend([g:fzf_grep_command], l:opts.args)
     let l:cmd = join(l:cmd, ' ')
 
     let l:fzf_opts = fzf#vim#with_preview(a:opts.bang)
