@@ -71,7 +71,7 @@ command! ToggleFzfFollowLinks call fzf_settings#files#toggle_follow_links()
 command! -bang -nargs=? -complete=dir Files  call fzf_settings#files#run(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir AFiles call fzf_settings#files#all(<q-args>, <bang>0)
 
-command! -bang -nargs=* Rg call fzf#vim#grep(g:fzf_grep_command .. ' -- ' .. fzf#shellescape(<q-args>), fzf#vim#with_preview(<bang>0), <bang>0)
+command! -bang -nargs=* Rg call fzf_settings#grep#rg(<q-args>, <bang>0)
 command! -bang -nargs=* RG call fzf#vim#grep2(g:fzf_grep_command .. ' -- ', <q-args>, fzf_settings#PreviewOptions(<bang>0), <bang>0)
 
 command! -bang -nargs=* FRg   call fzf#vim#grep(g:fzf_grep_command .. ' -F -- ' .. fzf#shellescape(<q-args>), fzf#vim#with_preview(<bang>0), <bang>0)

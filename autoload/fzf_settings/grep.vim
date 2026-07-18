@@ -1,5 +1,15 @@
+function! fzf_settings#grep#rg(query, ...) abort
+    let l:bang = get(a:, 1, 0)
+    if empty(a:query)
+        let l:cmd = g:fzf_grep_command .. ' --colors="match:none" ' .. fzf#shellescape('\S')
+    else
+        let l:cmd = g:fzf_grep_command .. ' -- ' .. fzf#shellescape(a:query)
+    endif
+    call fzf#vim#grep(l:cmd, fzf#vim#with_preview(l:bang), l:bang)
+endfunction
+
 function! fzf_settings#grep#filter(opts) abort
-    let l:opts = extend({ 'args': [] }, a:opts)
+    let l:opts = extend({ 'args': [], 'bang': 0 }, a:opts)
 
     if type(l:opts.args) == v:t_string
         let l:opts.args = [l:opts.args]
@@ -11,7 +21,7 @@ function! fzf_settings#grep#filter(opts) abort
 
     if empty(l:opts.args)
         " Skips lines that are empty or contain only spaces/tabs.
-        call extend(l:opts.args, ['--colors="match:none"', "'\\S'"])
+        call extend(l:opts.args, ['--colors="match:none"', fzf#shellescape('\S')])
     endif
 
     let l:cmd = extend([g:fzf_grep_command], l:opts.args)
