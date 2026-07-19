@@ -19,7 +19,7 @@ let g:fzf_action = {
 " Check if Popup/Floating Win is available for FZF or not
 if (exists('*popup_create') && has('patch-8.2.191')) ||
             \ (has('nvim') && exists('*nvim_open_win') && has('nvim-0.4.2'))
-    let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.7 } }
+    let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.8 } }
 else
     let g:fzf_layout = {}
 endif
@@ -29,9 +29,9 @@ if $FZF_DEFAULT_OPTS !~# '--info=inline-right'
 endif
 
 " Toggle wrap in preview window
-let $FZF_DEFAULT_OPTS ..= " --bind '::toggle-preview-wrap,ctrl-r:change-preview-window(right|95%),shift-left:preview-half-page-up,shift-right:preview-half-page-down'"
+let $FZF_DEFAULT_OPTS ..= " --bind 'alt-;:toggle-preview-wrap,ctrl-r:change-preview-window(right,50%|right,95%,border-left|top,50%,border-down|top,95%,border-down|hidden),shift-left:preview-half-page-up,shift-right:preview-half-page-down'"
 
-let g:fzf_preview_key = get(g:, 'fzf_preview_key', ';')
+let g:fzf_preview_key = get(g:, 'fzf_preview_key', 'alt-p')
 
 let g:fzf_ctags_bin    = get(g:, 'fzf_ctags_bin', 'ctags')
 let g:fzf_ctags_ignore = expand(get(g:, 'fzf_ctags_ignore', ''))
