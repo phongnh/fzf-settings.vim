@@ -42,6 +42,17 @@ function! fzf_settings#grep#RG(query, ...) abort
     call fzf#vim#grep2(g:fzf_grep_command .. ' -- ', a:query, l:fzf_opts, l:bang)
 endfunction
 
+function! fzf_settings#grep#word(opts) abort
+    let l:opts = extend({ 'args': '', 'bang': 0 }, a:opts)
+
+    let l:cmd = g:fzf_grep_command .. ' --fixed-strings --word-regexp'
+
+    let l:fzf_opts = fzf_settings#PreviewOptions(l:opts.bang)
+    call extend(l:fzf_opts.options, ['--prompt', printf('RG(%s)> ', 'word')])
+
+    call fzf#vim#grep2(l:cmd .. ' -e ', l:opts.args, l:fzf_opts, l:opts.bang)
+endfunction
+
 function! fzf_settings#grep#live(opts) abort
     let l:opts = extend({ 'args': '', 'bang': 0, 'string': 0 }, a:opts)
 

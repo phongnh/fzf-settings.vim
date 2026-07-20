@@ -77,6 +77,7 @@ command! -bang -nargs=* RG call fzf_settings#grep#RG(<q-args>, <bang>0)
 command! -bang -nargs=* LiveFilter     call fzf_settings#grep#filter({ 'args': <q-args>, 'bang': <bang>0 })
 command! -bang -nargs=* LiveGrep       call fzf_settings#grep#live({ 'args': <q-args>, 'bang': <bang>0 })
 command! -bang -nargs=* LiveGrepString call fzf_settings#grep#live({ 'args': <q-args>, 'string': 1, 'bang': <bang>0 })
+command! -bang -nargs=* LiveGrepWord   call fzf_settings#grep#word({ 'args': <q-args>, 'bang': <bang>0 })
 
 " Extra commands
 command! -bang          Mru          call fzf_settings#mru#run(<bang>0)
